@@ -16,7 +16,7 @@ spec:
         - name: event-service
           image: e-ticket/event-service
           ports:
-            - containerPort: 8081
+            - containerPort: 50051
           resources:
             requests:
               memory: '64Mi'
@@ -24,12 +24,6 @@ spec:
             limits:
               memory: '128Mi'
               cpu: '200m'
-          env:
-            - name: MONGODB_URI
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb
-                  key: uri
 ---
 apiVersion: v1
 kind: Service
@@ -39,7 +33,7 @@ spec:
   selector:
     app: event-service
   ports:
-    - port: 8081
+    - port: 50051
       name: grpc
-      targetPort: 8081
+      targetPort: 50051
   type: ClusterIP

@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/baobei23/e-ticket/services/api-gateway/grpc_clients"
 	"github.com/baobei23/e-ticket/shared/env"
 	"github.com/gin-gonic/gin"
 )
@@ -17,9 +18,18 @@ var httpAddr = env.GetString("GATEWAY_HTTP_ADDR", ":8080")
 
 func main() {
 
+	registry, err := grpc_clients.NewServiceRegistry()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer registry.Close()
+
+	grpc := NewGatewayServer(registry.Event)
+
 	r := gin.Default()
 
 	r.GET("/health", healthCheckHandler)
+	r.GET("/events", grpc.getEventsHandler)
 
 	server := &http.Server{
 		Addr:    httpAddr,

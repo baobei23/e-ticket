@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/baobei23/e-ticket/services/event-service/internal/repository"
+	"github.com/baobei23/e-ticket/services/event-service/internal/infrastructure/repository"
 	"github.com/baobei23/e-ticket/services/event-service/internal/service"
 	pb "github.com/baobei23/e-ticket/shared/proto/event"
 	"google.golang.org/grpc"

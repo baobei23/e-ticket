@@ -47,10 +47,26 @@ func NewInMemoryRepository() domain.EventRepository {
 	}
 }
 
-func (r *inMemRepository) GetAll(ctx context.Context) ([]*pb.Event, error) {
+func (r *inMemRepository) GetAll(ctx context.Context, page, limit int) ([]*pb.Event, int64, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	return r.data, nil
+
+	totalItems := int64(len(r.data))
+
+	// Hitung Start & End Index
+	start := (page - 1) * limit
+	end := start + limit
+
+	// Validasi Bounds
+	if start >= len(r.data) {
+		return []*pb.Event{}, totalItems, nil // Halaman kosong (out of range)
+	}
+	if end > len(r.data) {
+		end = len(r.data)
+	}
+
+	// Return slice sesuai halaman
+	return r.data[start:end], totalItems, nil
 }
 
 func (r *inMemRepository) GetByID(ctx context.Context, id int64) (*pb.Event, error) {
