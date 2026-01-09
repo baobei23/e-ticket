@@ -65,3 +65,14 @@ func (s *EventService) CheckAvailability(ctx context.Context, req *pb.CheckAvail
 		UnitPrice:   event.Price,
 	}, nil
 }
+
+func (s *EventService) GetEventDetail(ctx context.Context, req *pb.GetEventDetailRequest) (*pb.GetEventDetailResponse, error) {
+	event, err := s.repo.GetByID(ctx, req.EventId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetEventDetailResponse{
+		Event: event,
+	}, nil
+}

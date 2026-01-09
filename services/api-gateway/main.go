@@ -30,7 +30,8 @@ func main() {
 
 	r.GET("/health", healthCheckHandler)
 	r.GET("/events", grpc.getEventsHandler)
-
+	r.GET("/events/:id", grpc.getEventDetailHandler)
+	r.GET("/events/:id/check", grpc.checkAvailabilityHandler)
 	server := &http.Server{
 		Addr:    httpAddr,
 		Handler: r,

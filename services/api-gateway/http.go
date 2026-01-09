@@ -56,3 +56,62 @@ func (s *GatewayServer) getEventsHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, resp)
 }
+
+func (s *GatewayServer) getEventDetailHandler(c *gin.Context) {
+	eventIdStr := c.Param("id")
+	eventId, _ := strconv.ParseInt(eventIdStr, 10, 64)
+
+	ctx := c.Request.Context()
+
+	resp, err := s.eventClient.Client.GetEventDetail(ctx, &event.GetEventDetailRequest{
+		EventId: eventId,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to fetch event detail",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, resp)
+}
+
+func (s *GatewayServer) checkAvailabilityHandler(c *gin.Context) {
+
+	eventIdStr := c.Param("id")
+	quantityStr := c.Query("quantity")
+
+	eventId, err := strconv.ParseInt(eventIdStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing event_id"})
+		return
+	}
+
+	quantity, err := strconv.Atoi(quantityStr)
+	if err != nil || quantity <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing quantity"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	resp, err := s.eventClient.Client.CheckAvailability(ctx, &event.CheckAvailabilityRequest{
+		EventId:  eventId,
+		Quantity: int32(quantity),
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to check availability",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"is_available": resp.IsAvailable,
+		"unit_price":   resp.UnitPrice,
+	})
+}
