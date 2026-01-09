@@ -27,7 +27,7 @@ message CreateBookingRequest {
 
 message CreateBookingResponse {
     string booking_id = 1;
-    string payment_url = 2; // URL dummy atau real payment gateway
+    string payment_url = 2; 
     int64 timeout_seconds = 3; // Waktu expired pembayaran
 }
 

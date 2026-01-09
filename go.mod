@@ -2,7 +2,11 @@ module github.com/baobei23/e-ticket
 
 go 1.25.0
 
-require github.com/gin-gonic/gin v1.11.0
+require (
+	github.com/gin-gonic/gin v1.11.0
+	google.golang.org/grpc v1.78.0
+	google.golang.org/protobuf v1.36.11
+)
 
 require (
 	github.com/bytedance/sonic v1.14.0 // indirect
@@ -35,5 +39,5 @@ require (
 	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/text v0.31.0 // indirect
 	golang.org/x/tools v0.38.0 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251029180050-ab9386a59fda // indirect
 )

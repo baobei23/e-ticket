@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package event;
 
-import "proto/common.proto";
 
 
 option go_package = "shared/proto/event";
@@ -27,13 +26,25 @@ message Event {
     double price = 9;
 }
 
+message PaginationRequest {
+  int32 page = 1;
+  int32 limit = 2;
+}
+
+message PaginationMetadata {
+  int32 current_page = 1;
+  int32 total_pages = 2;
+  int32 total_items = 3;
+  int32 page_limit = 4;
+}
+
 message GetEventsRequest {
-    common.PaginationRequest pagination = 1;
+    PaginationRequest pagination = 1;
 }
 
 message GetEventsResponse {
     repeated Event events = 1;
-    common.PaginationMetadata meta = 2;
+    PaginationMetadata meta = 2;
 }
 
 message GetEventDetailRequest {
@@ -51,5 +62,5 @@ message CheckAvailabilityRequest {
 
 message CheckAvailabilityResponse {
     bool is_available = 1;
-    double unit_price = 2; // Mengembalikan harga saat ini untuk validasi
+    double unit_price = 2; 
 }
