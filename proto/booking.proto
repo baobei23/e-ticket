@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package booking;
+
+option go_package = "shared/proto/booking";
+
+service BookingService {
+    rpc CreateBooking(CreateBookingRequest) returns (CreateBookingResponse);
+    rpc GetBookingDetail(GetBookingDetailRequest) returns (GetBookingDetailResponse);
+}
+
+message Booking {
+    string booking_id = 1; // UUID
+    int64 user_id = 2;
+    int64 event_id = 3;
+    int32 quantity = 4;
+    double total_amount = 5;
+    string status = 6; // PENDING, CONFIRMED, CANCELLED, FAILED
+    int64 created_at = 7;
+}
+
+message CreateBookingRequest {
+    int64 user_id = 1; 
+    int64 event_id = 2;
+    int32 quantity = 3;
+}
+
+message CreateBookingResponse {
+    string booking_id = 1;
+    string payment_url = 2; // URL dummy atau real payment gateway
+    int64 timeout_seconds = 3; // Waktu expired pembayaran
+}
+
+message GetBookingDetailRequest {
+    string booking_id = 1;
+    int64 user_id = 2;
+}
+
+message GetBookingDetailResponse {
+    Booking booking = 1;
+}
