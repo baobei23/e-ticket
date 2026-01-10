@@ -20,7 +20,6 @@ func NewBookingEventPublisher(mq *messaging.RabbitMQClient) domain.BookingPublis
 }
 
 func (p *BookingEventPublisher) PublishBookingCreated(ctx context.Context, booking *domain.Booking) error {
-	// 1. Siapkan Payload Kontrak
 	payload := contracts.BookingCreatedEvent{
 		BookingID: booking.ID,
 		UserID:    booking.UserID,
@@ -29,9 +28,8 @@ func (p *BookingEventPublisher) PublishBookingCreated(ctx context.Context, booki
 		CreatedAt: booking.CreatedAt,
 	}
 
-	// 2. Publish ke RabbitMQ (Queue: booking.created)
-	// Kita gunakan Queue Name dari contracts
-	err := p.mq.Publish(ctx, contracts.QueueBookingCreated, "BookingCreated", payload)
+	err := p.mq.Publish(ctx, "BookingCreated", payload)
+
 	if err != nil {
 		log.Printf("Failed to publish BookingCreated event: %v", err)
 		return err

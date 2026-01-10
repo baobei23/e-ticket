@@ -43,4 +43,5 @@ type EventService interface {
 	GetEvents(ctx context.Context, page, limit int) ([]*Event, int64, error)
 	GetEventDetail(ctx context.Context, id int64) (*Event, error)
 	CheckAvailability(ctx context.Context, eventID int64, quantity int32) (bool, float64, error)
+	ReduceStock(ctx context.Context, eventID int64, quantity int32) error
 }

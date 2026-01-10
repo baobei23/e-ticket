@@ -34,3 +34,7 @@ func (s *EventService) CheckAvailability(ctx context.Context, eventID int64, qua
 
 	return isAvailable, event.Price, nil
 }
+
+func (s *EventService) ReduceStock(ctx context.Context, eventID int64, quantity int32) error {
+	return s.repo.ReduceStock(ctx, eventID, quantity)
+}
