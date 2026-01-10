@@ -4,75 +4,33 @@ import (
 	"context"
 
 	"github.com/baobei23/e-ticket/services/event-service/internal/domain"
-
-	"github.com/baobei23/e-ticket/shared/proto/event"
-	pb "github.com/baobei23/e-ticket/shared/proto/event"
 )
 
 type EventService struct {
-	pb.UnimplementedEventServiceServer
 	repo domain.EventRepository
 }
 
-func NewEventService(repo domain.EventRepository) *EventService {
+func NewEventService(repo domain.EventRepository) domain.EventService {
 	return &EventService{
 		repo: repo,
 	}
 }
 
-func (s *EventService) GetEvents(ctx context.Context, req *pb.GetEventsRequest) (*pb.GetEventsResponse, error) {
-
-	page := int(req.Pagination.GetPage())
-	if page == 0 {
-		page = 1
-	}
-	limit := int(req.Pagination.GetLimit())
-	if limit == 0 {
-		limit = 10
-	}
-
-	events, totalItems, err := s.repo.GetAll(ctx, page, limit)
-	if err != nil {
-		return nil, err
-	}
-
-	totalPages := int32(0)
-	if limit > 0 {
-		totalPages = int32((totalItems + int64(limit) - 1) / int64(limit))
-	}
-
-	return &pb.GetEventsResponse{
-		Events: events,
-		Meta: &event.PaginationMetadata{
-			CurrentPage: int32(page),
-			PageLimit:   int32(limit),
-			TotalItems:  int32(totalItems),
-			TotalPages:  totalPages,
-		},
-	}, nil
+func (s *EventService) GetEvents(ctx context.Context, page, limit int) ([]*domain.Event, int64, error) {
+	return s.repo.GetAll(ctx, page, limit)
 }
 
-func (s *EventService) CheckAvailability(ctx context.Context, req *pb.CheckAvailabilityRequest) (*pb.CheckAvailabilityResponse, error) {
-	event, err := s.repo.GetByID(ctx, req.EventId)
-	if err != nil {
-		return &pb.CheckAvailabilityResponse{IsAvailable: false}, nil
-	}
-
-	isAvailable := event.AvailableSeats >= req.Quantity
-
-	return &pb.CheckAvailabilityResponse{
-		IsAvailable: isAvailable,
-		UnitPrice:   event.Price,
-	}, nil
+func (s *EventService) GetEventDetail(ctx context.Context, id int64) (*domain.Event, error) {
+	return s.repo.GetByID(ctx, id)
 }
 
-func (s *EventService) GetEventDetail(ctx context.Context, req *pb.GetEventDetailRequest) (*pb.GetEventDetailResponse, error) {
-	event, err := s.repo.GetByID(ctx, req.EventId)
+func (s *EventService) CheckAvailability(ctx context.Context, eventID int64, quantity int32) (bool, float64, error) {
+	event, err := s.repo.GetByID(ctx, eventID)
 	if err != nil {
-		return nil, err
+		return false, 0, err
 	}
 
-	return &pb.GetEventDetailResponse{
-		Event: event,
-	}, nil
+	isAvailable := event.AvailableSeats >= quantity
+
+	return isAvailable, event.Price, nil
 }

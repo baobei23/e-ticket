@@ -5,11 +5,10 @@ import (
 	"log"
 	"net"
 
+	"github.com/baobei23/e-ticket/services/event-service/internal/infrastructure/grpc"
 	"github.com/baobei23/e-ticket/services/event-service/internal/infrastructure/repository"
 	"github.com/baobei23/e-ticket/services/event-service/internal/service"
-	pb "github.com/baobei23/e-ticket/shared/proto/event"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
+	grpcserver "google.golang.org/grpc"
 )
 
 func main() {
@@ -21,12 +20,11 @@ func main() {
 
 	// 2. Init Dependencies
 	repo := repository.NewInMemoryRepository()
-	svc := service.NewEventService(repo)
+	service := service.NewEventService(repo)
 
 	// 3. Init gRPC Server
-	grpcServer := grpc.NewServer()
-	pb.RegisterEventServiceServer(grpcServer, svc)
-	reflection.Register(grpcServer)
+	grpcServer := grpcserver.NewServer()
+	grpc.NewEventHandler(grpcServer, service)
 
 	fmt.Printf("Event Service listening on :50051\n")
 	if err := grpcServer.Serve(lis); err != nil {

@@ -7,35 +7,34 @@ import (
 	"time"
 
 	"github.com/baobei23/e-ticket/services/event-service/internal/domain"
-	pb "github.com/baobei23/e-ticket/shared/proto/event"
 )
 
 type inMemRepository struct {
-	data []*pb.Event
+	data []*domain.Event
 	mu   sync.RWMutex
 }
 
 func NewInMemoryRepository() domain.EventRepository {
 	// Seed data dummy
-	events := []*pb.Event{
+	events := []*domain.Event{
 		{
-			Id:             1,
+			ID:             1,
 			Name:           "Konser Coldplay - Music of the Spheres",
 			Description:    "World Tour 2025 di Jakarta",
 			Location:       "Gelora Bung Karno",
-			StartTime:      time.Now().Add(24 * time.Hour).Unix(),
-			EndTime:        time.Now().Add(28 * time.Hour).Unix(),
+			StartTime:      time.Now().Add(24 * time.Hour),
+			EndTime:        time.Now().Add(28 * time.Hour),
 			TotalSeats:     50000,
 			AvailableSeats: 1000,
 			Price:          3500000,
 		},
 		{
-			Id:             2,
+			ID:             2,
 			Name:           "Tech Conference 2026",
 			Description:    "Konferensi teknologi terbesar di Asia",
 			Location:       "JCC Senayan",
-			StartTime:      time.Now().Add(48 * time.Hour).Unix(),
-			EndTime:        time.Now().Add(56 * time.Hour).Unix(),
+			StartTime:      time.Now().Add(48 * time.Hour),
+			EndTime:        time.Now().Add(56 * time.Hour),
 			TotalSeats:     500,
 			AvailableSeats: 500,
 			Price:          150000,
@@ -47,7 +46,7 @@ func NewInMemoryRepository() domain.EventRepository {
 	}
 }
 
-func (r *inMemRepository) GetAll(ctx context.Context, page, limit int) ([]*pb.Event, int64, error) {
+func (r *inMemRepository) GetAll(ctx context.Context, page, limit int) ([]*domain.Event, int64, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
@@ -59,7 +58,7 @@ func (r *inMemRepository) GetAll(ctx context.Context, page, limit int) ([]*pb.Ev
 
 	// Validasi Bounds
 	if start >= len(r.data) {
-		return []*pb.Event{}, totalItems, nil // Halaman kosong (out of range)
+		return []*domain.Event{}, totalItems, nil // Halaman kosong (out of range)
 	}
 	if end > len(r.data) {
 		end = len(r.data)
@@ -69,12 +68,12 @@ func (r *inMemRepository) GetAll(ctx context.Context, page, limit int) ([]*pb.Ev
 	return r.data[start:end], totalItems, nil
 }
 
-func (r *inMemRepository) GetByID(ctx context.Context, id int64) (*pb.Event, error) {
+func (r *inMemRepository) GetByID(ctx context.Context, id int64) (*domain.Event, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
 	for _, e := range r.data {
-		if e.Id == id {
+		if e.ID == id {
 			return e, nil
 		}
 	}
@@ -86,7 +85,7 @@ func (r *inMemRepository) ReduceStock(ctx context.Context, eventID int64, quanti
 	defer r.mu.Unlock()
 
 	for _, e := range r.data {
-		if e.Id == eventID {
+		if e.ID == eventID {
 			if e.AvailableSeats < quantity {
 				return errors.New("insufficient seats")
 			}
