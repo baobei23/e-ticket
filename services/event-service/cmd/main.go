@@ -12,16 +12,14 @@ import (
 	"github.com/baobei23/e-ticket/services/event-service/internal/infrastructure/grpc"
 	"github.com/baobei23/e-ticket/services/event-service/internal/infrastructure/repository"
 	"github.com/baobei23/e-ticket/services/event-service/internal/service"
+	"github.com/baobei23/e-ticket/shared/env"
 	"github.com/baobei23/e-ticket/shared/messaging"
 	grpcserver "google.golang.org/grpc"
 )
 
 func main() {
 
-	amqpURL := os.Getenv("RABBITMQ_URL")
-	if amqpURL == "" {
-		amqpURL = "amqp://admin:admin@rabbitmq:5672/"
-	}
+	amqpURL := env.GetString("RABBITMQ_URI", "amqp://admin:admin@rabbitmq:5672/")
 	mqClient, err := messaging.NewRabbitMQClient(amqpURL)
 	if err != nil {
 		log.Fatalf("Failed to init RabbitMQ: %v", err)
