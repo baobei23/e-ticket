@@ -24,7 +24,7 @@ func main() {
 	}
 	defer registry.Close()
 
-	grpc := NewGatewayServer(registry.Event)
+	grpc := NewGatewayServer(registry.Event, registry.Booking)
 
 	r := gin.Default()
 
@@ -32,6 +32,9 @@ func main() {
 	r.GET("/events", grpc.getEventsHandler)
 	r.GET("/events/:id", grpc.getEventDetailHandler)
 	r.GET("/events/:id/check", grpc.checkAvailabilityHandler)
+
+	r.POST("/bookings", grpc.CreateBookingHandler)
+
 	server := &http.Server{
 		Addr:    httpAddr,
 		Handler: r,

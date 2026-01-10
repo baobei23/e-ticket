@@ -5,17 +5,26 @@ import (
 	"strconv"
 
 	"github.com/baobei23/e-ticket/services/api-gateway/grpc_clients"
+	"github.com/baobei23/e-ticket/shared/proto/booking"
 	"github.com/baobei23/e-ticket/shared/proto/event"
 	"github.com/gin-gonic/gin"
 )
 
 type GatewayServer struct {
-	eventClient *grpc_clients.EventServiceClient
+	eventClient   *grpc_clients.EventServiceClient
+	bookingClient *grpc_clients.BookingServiceClient
 }
 
-func NewGatewayServer(eventClient *grpc_clients.EventServiceClient) *GatewayServer {
+type createBookingRequest struct {
+	EventID  int64 `json:"event_id" binding:"required"`
+	Quantity int32 `json:"quantity" binding:"required,min=1"`
+	UserID   int64 `json:"user_id" binding:"required"` // Nanti diambil dari Token/Context Auth
+}
+
+func NewGatewayServer(eventClient *grpc_clients.EventServiceClient, bookingClient *grpc_clients.BookingServiceClient) *GatewayServer {
 	return &GatewayServer{
-		eventClient: eventClient,
+		eventClient:   eventClient,
+		bookingClient: bookingClient,
 	}
 }
 
@@ -114,4 +123,32 @@ func (s *GatewayServer) checkAvailabilityHandler(c *gin.Context) {
 		"is_available": resp.IsAvailable,
 		"unit_price":   resp.UnitPrice,
 	})
+}
+
+func (s *GatewayServer) CreateBookingHandler(c *gin.Context) {
+	var req createBookingRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	// Panggil Booking Service via gRPC
+	resp, err := s.bookingClient.Client.CreateBooking(ctx, &booking.CreateBookingRequest{
+		UserId:   req.UserID,
+		EventId:  req.EventID,
+		Quantity: req.Quantity,
+	})
+
+	if err != nil {
+		// Bisa tambah mapping error code gRPC ke HTTP di sini (misal Unavailable -> 400/409)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to create booking",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, resp)
 }
