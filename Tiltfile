@@ -79,3 +79,33 @@ k8s_yaml('./infra/development/k8s/event-service-deployment.yaml')
 k8s_resource('event-service', resource_deps=['event-service-compile'], labels="services")
 
 ### End of Event Service ###
+### Booking Service ###
+
+booking_compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/booking-service ./services/booking-service/cmd/main.go'
+if os.name == 'nt':
+ booking_compile_cmd = './infra/development/docker/booking-build.bat'
+
+local_resource(
+  'booking-service-compile',
+  booking_compile_cmd,
+  deps=['./services/booking-service', './shared'], labels="compiles")
+
+docker_build_with_restart(
+  'e-ticket/booking-service',
+  '.',
+  entrypoint=['/app/build/booking-service'],
+  dockerfile='./infra/development/docker/booking-service.Dockerfile',
+  only=[
+    './build/booking-service',
+    './shared',
+  ],
+  live_update=[
+    sync('./build', '/app/build'),
+    sync('./shared', '/app/shared'),
+  ],
+)
+
+k8s_yaml('./infra/development/k8s/booking-service-deployment.yaml')
+k8s_resource('booking-service', resource_deps=['booking-service-compile'], labels="services")
+
+### End of Booking Service ###
