@@ -152,3 +152,37 @@ func (s *GatewayServer) CreateBookingHandler(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, resp)
 }
+
+func (s *GatewayServer) GetBookingDetailHandler(c *gin.Context) {
+	bookingID := c.Param("id")
+	if bookingID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Booking ID is required"})
+		return
+	}
+
+	// Simulasi ambil UserID dari context/token (karena belum ada auth middleware, kita ambil dari query param dulu)
+	userIDStr := c.Query("user_id")
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing user_id"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	resp, err := s.bookingClient.Client.GetBookingDetail(ctx, &booking.GetBookingDetailRequest{
+		BookingId: bookingID,
+		UserId:    userID,
+	})
+
+	if err != nil {
+		// Mapping error gRPC status code bisa ditambahkan di sini
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to fetch booking detail",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, resp)
+}

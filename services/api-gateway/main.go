@@ -33,7 +33,8 @@ func main() {
 	r.GET("/events/:id", grpc.getEventDetailHandler)
 	r.GET("/events/:id/check", grpc.checkAvailabilityHandler)
 
-	r.POST("/bookings", grpc.CreateBookingHandler)
+	r.POST("/booking", grpc.CreateBookingHandler)
+	r.GET("/booking/:id", grpc.GetBookingDetailHandler)
 
 	server := &http.Server{
 		Addr:    httpAddr,
