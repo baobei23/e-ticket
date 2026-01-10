@@ -51,7 +51,12 @@ type BookingService interface {
 	GetBookingDetail(ctx context.Context, bookingID string, userID int64) (*Booking, error)
 }
 
-// Event Provider Interface
+// Event-Service Provider Interface
 type EventProvider interface {
 	CheckAvailability(ctx context.Context, eventID int64, quantity int32) (isAvailable bool, unitPrice float64, err error)
+}
+
+// Booking Publisher Interface
+type BookingPublisher interface {
+	PublishBookingCreated(ctx context.Context, booking *Booking) error
 }

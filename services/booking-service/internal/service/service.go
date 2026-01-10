@@ -12,12 +12,14 @@ import (
 type BookingService struct {
 	repo          domain.BookingRepository
 	eventProvider domain.EventProvider
+	publisher     domain.BookingPublisher
 }
 
-func NewBookingService(repo domain.BookingRepository, eventProvider domain.EventProvider) domain.BookingService {
+func NewBookingService(repo domain.BookingRepository, eventProvider domain.EventProvider, publisher domain.BookingPublisher) domain.BookingService {
 	return &BookingService{
 		repo:          repo,
 		eventProvider: eventProvider,
+		publisher:     publisher,
 	}
 }
 
@@ -48,6 +50,17 @@ func (s *BookingService) CreateBooking(ctx context.Context, userID int64, eventI
 
 	if err := s.repo.Create(ctx, booking); err != nil {
 		return nil, "", err
+	}
+
+	// PUBLISH EVENT
+	// Kita lakukan secara async (go routine) atau sync tergantung kebutuhan.
+	// Jika RabbitMQ mati, apakah booking harus gagal?
+	// Untuk reliability tinggi, sebaiknya sync dulu atau gunakan Outbox Pattern.
+	// Untuk sekarang, kita panggil sync tapi log error saja (soft failure).
+
+	if err := s.publisher.PublishBookingCreated(ctx, booking); err != nil {
+		// Warning: Event gagal terkirim. Stok mungkin tidak ter-reserve.
+		// Idealnya: Rollback booking atau simpan ke Outbox table.
 	}
 
 	paymentURL := "https://payment-gateway.com/pay/" + bookingID

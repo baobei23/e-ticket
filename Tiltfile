@@ -47,7 +47,7 @@ docker_build_with_restart(
 )
 
 k8s_yaml('./infra/development/k8s/api-gateway-deployment.yaml')
-k8s_resource('api-gateway', port_forwards=8080, resource_deps=['api-gateway-compile'], labels="services")
+k8s_resource('api-gateway', port_forwards=8080, resource_deps=['api-gateway-compile', 'rabbitmq'], labels="services")
 ### End of API Gateway ###
 ### Event Service ###
 
@@ -76,7 +76,7 @@ docker_build_with_restart(
 )
 
 k8s_yaml('./infra/development/k8s/event-service-deployment.yaml')
-k8s_resource('event-service', resource_deps=['event-service-compile'], labels="services")
+k8s_resource('event-service', resource_deps=['event-service-compile', 'rabbitmq'], labels="services")
 
 ### End of Event Service ###
 ### Booking Service ###
@@ -106,6 +106,6 @@ docker_build_with_restart(
 )
 
 k8s_yaml('./infra/development/k8s/booking-service-deployment.yaml')
-k8s_resource('booking-service', resource_deps=['booking-service-compile'], labels="services")
+k8s_resource('booking-service', resource_deps=['booking-service-compile', 'rabbitmq'], labels="services")
 
 ### End of Booking Service ###
