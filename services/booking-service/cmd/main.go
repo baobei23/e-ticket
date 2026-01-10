@@ -32,7 +32,7 @@ func main() {
 	}
 
 	//Init RabbitMQ
-	amqpURL := env.GetString("RABBITMQ_URI", "amqp://guest:guest@rabbitmq:5672/")
+	amqpURL := env.GetString("RABBITMQ_URI", "amqp://admin:admin@rabbitmq:5672/")
 	mqClient, err := messaging.NewRabbitMQClient(amqpURL)
 	if err != nil {
 		log.Fatalf("Failed to init RabbitMQ: %v", err)
