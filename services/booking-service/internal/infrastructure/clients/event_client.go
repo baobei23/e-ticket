@@ -20,7 +20,7 @@ func NewEventGRPCClient() (domain.EventProvider, error) {
 
 	addr := os.Getenv("EVENT_SERVICE_ADDR")
 	if addr == "" {
-		addr = "localhost:50051"
+		addr = "event-service:50051"
 	}
 
 	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
