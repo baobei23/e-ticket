@@ -24,7 +24,7 @@ func main() {
 	}
 	defer registry.Close()
 
-	grpc := NewGatewayServer(registry.Event, registry.Booking)
+	grpc := NewGatewayServer(registry.Event, registry.Booking, registry.Payment)
 
 	r := gin.Default()
 
@@ -35,6 +35,8 @@ func main() {
 
 	r.POST("/booking", grpc.CreateBookingHandler)
 	r.GET("/booking/:id", grpc.GetBookingDetailHandler)
+
+	r.POST("/stripe/webhook", grpc.HandleStripeWebhook)
 
 	server := &http.Server{
 		Addr:    httpAddr,

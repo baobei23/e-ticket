@@ -3,6 +3,7 @@ package grpc_clients
 type ServiceRegistry struct {
 	Event   *EventServiceClient
 	Booking *BookingServiceClient
+	Payment *PaymentServiceClient
 	// add other clients here
 }
 
@@ -17,11 +18,17 @@ func NewServiceRegistry() (*ServiceRegistry, error) {
 		return nil, err
 	}
 
+	paymentClient, err := NewPaymentServiceClient()
+	if err != nil {
+		return nil, err
+	}
+
 	// add other clients here
 
 	return &ServiceRegistry{
 		Event:   eventClient,
 		Booking: bookingClient,
+		Payment: paymentClient,
 		// add other clients here
 	}, nil
 }
@@ -33,6 +40,9 @@ func (r *ServiceRegistry) Close() {
 	}
 	if r.Booking != nil {
 		r.Booking.Close()
+	}
+	if r.Payment != nil {
+		r.Payment.Close()
 	}
 	// close other clients here
 }

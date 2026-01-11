@@ -1,18 +1,21 @@
 package main
 
 import (
+	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/baobei23/e-ticket/services/api-gateway/grpc_clients"
 	"github.com/baobei23/e-ticket/shared/proto/booking"
 	"github.com/baobei23/e-ticket/shared/proto/event"
+	"github.com/baobei23/e-ticket/shared/proto/payment"
 	"github.com/gin-gonic/gin"
 )
 
 type GatewayServer struct {
 	eventClient   *grpc_clients.EventServiceClient
 	bookingClient *grpc_clients.BookingServiceClient
+	paymentClient *grpc_clients.PaymentServiceClient
 }
 
 type createBookingRequest struct {
@@ -21,10 +24,11 @@ type createBookingRequest struct {
 	UserID   int64 `json:"user_id" binding:"required"` // Nanti diambil dari Token/Context Auth
 }
 
-func NewGatewayServer(eventClient *grpc_clients.EventServiceClient, bookingClient *grpc_clients.BookingServiceClient) *GatewayServer {
+func NewGatewayServer(eventClient *grpc_clients.EventServiceClient, bookingClient *grpc_clients.BookingServiceClient, paymentClient *grpc_clients.PaymentServiceClient) *GatewayServer {
 	return &GatewayServer{
 		eventClient:   eventClient,
 		bookingClient: bookingClient,
+		paymentClient: paymentClient,
 	}
 }
 
@@ -185,4 +189,33 @@ func (s *GatewayServer) GetBookingDetailHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, resp)
+}
+
+func (s *GatewayServer) HandleStripeWebhook(c *gin.Context) {
+	// 1. Baca Raw Body
+	// Penting: Stripe butuh raw bytes untuk verifikasi signature.
+	// Gin secara default membaca body stream, jadi kita harus baca manual.
+	payload, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read body"})
+		return
+	}
+
+	sigHeader := c.GetHeader("Stripe-Signature")
+
+	// 2. Kirim ke Payment Service via gRPC
+	// Asumsi: client sudah ada method HandleWebhook (hasil generate proto baru)
+	_, err = s.paymentClient.Client.HandleWebhook(c.Request.Context(), &payment.HandleWebhookRequest{
+		Payload:   payload,
+		Signature: sigHeader,
+	})
+
+	if err != nil {
+		// Log error
+		// Return 400/500 agar Stripe tau webhook gagal diproses
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "received"})
 }
