@@ -176,7 +176,7 @@ func (x *CreateBookingRequest) GetQuantity() int32 {
 type CreateBookingResponse struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	BookingId      string                 `protobuf:"bytes,1,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
-	PaymentUrl     string                 `protobuf:"bytes,2,opt,name=payment_url,json=paymentUrl,proto3" json:"payment_url,omitempty"`              // URL dummy atau real payment gateway
+	PaymentUrl     string                 `protobuf:"bytes,2,opt,name=payment_url,json=paymentUrl,proto3" json:"payment_url,omitempty"`
 	TimeoutSeconds int64                  `protobuf:"varint,3,opt,name=timeout_seconds,json=timeoutSeconds,proto3" json:"timeout_seconds,omitempty"` // Waktu expired pembayaran
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
