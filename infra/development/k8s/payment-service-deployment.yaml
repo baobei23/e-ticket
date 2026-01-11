@@ -24,6 +24,27 @@ spec:
             limits:
               memory: '128Mi'
               cpu: '200m'
+          env:
+            - name: STRIPE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: STRIPE_API_KEY
+                  name: secrets
+            - name: STRIPE_SUCCESS_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: STRIPE_SUCCESS_URL
+                  name: app-config
+            - name: STRIPE_CANCEL_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: STRIPE_CANCEL_URL
+                  name: app-config
+            - name: STRIPE_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: STRIPE_WEBHOOK_SECRET
+                  name: secrets
 ---
 apiVersion: v1
 kind: Service
