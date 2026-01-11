@@ -109,3 +109,33 @@ k8s_yaml('./infra/development/k8s/booking-service-deployment.yaml')
 k8s_resource('booking-service', resource_deps=['booking-service-compile', 'rabbitmq'], labels="services")
 
 ### End of Booking Service ###
+### Payment Service ###
+
+payment_compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/payment-service ./services/payment-service/cmd/main.go'
+if os.name == 'nt':
+ payment_compile_cmd = './infra/development/docker/payment-build.bat'
+
+local_resource(
+  'payment-service-compile',
+  payment_compile_cmd,
+  deps=['./services/payment-service', './shared'], labels="compiles")
+
+docker_build_with_restart(
+  'e-ticket/payment-service',
+  '.',
+  entrypoint=['/app/build/payment-service'],
+  dockerfile='./infra/development/docker/payment-service.Dockerfile',
+  only=[
+    './build/payment-service',
+    './shared',
+  ],
+  live_update=[
+    sync('./build', '/app/build'),
+    sync('./shared', '/app/shared'),
+  ],
+)
+
+k8s_yaml('./infra/development/k8s/payment-service-deployment.yaml')
+k8s_resource('payment-service', resource_deps=['payment-service-compile', 'rabbitmq'], labels="services")
+
+### End of Payment Service ###
