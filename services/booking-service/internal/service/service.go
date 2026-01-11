@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/baobei23/e-ticket/services/booking-service/internal/domain"
@@ -10,21 +11,23 @@ import (
 )
 
 type BookingService struct {
-	repo          domain.BookingRepository
-	eventProvider domain.EventProvider
-	publisher     domain.BookingPublisher
+	repo            domain.BookingRepository
+	eventProvider   domain.EventProvider
+	publisher       domain.BookingPublisher
+	paymentProvider domain.PaymentProvider
 }
 
-func NewBookingService(repo domain.BookingRepository, eventProvider domain.EventProvider, publisher domain.BookingPublisher) domain.BookingService {
+func NewBookingService(repo domain.BookingRepository, eventProvider domain.EventProvider, publisher domain.BookingPublisher, paymentProvider domain.PaymentProvider) domain.BookingService {
 	return &BookingService{
-		repo:          repo,
-		eventProvider: eventProvider,
-		publisher:     publisher,
+		repo:            repo,
+		eventProvider:   eventProvider,
+		publisher:       publisher,
+		paymentProvider: paymentProvider,
 	}
 }
 
 func (s *BookingService) CreateBooking(ctx context.Context, userID int64, eventID int64, quantity int32) (*domain.Booking, string, error) {
-	// 1. Panggil Interface (Bersih dari protobuf struct)
+
 	isAvailable, unitPrice, err := s.eventProvider.CheckAvailability(ctx, eventID, quantity)
 	if err != nil {
 		return nil, "", err
@@ -63,7 +66,13 @@ func (s *BookingService) CreateBooking(ctx context.Context, userID int64, eventI
 		// Idealnya: Rollback booking atau simpan ke Outbox table.
 	}
 
-	paymentURL := "https://payment-gateway.com/pay/" + bookingID
+	paymentURL, err := s.paymentProvider.CreatePayment(ctx, bookingID, userID, totalAmount)
+	if err != nil {
+		// Log error, tapi booking sudah terbentuk.
+		// User harus bisa retry payment nanti (Endpoint GetBookingDetail harus return paymentURL juga kalau belum lunas).
+		// Untuk simplicity sekarang, kita return error atau string kosong.
+		return nil, "", fmt.Errorf("failed to create payment session: %w", err)
+	}
 	return booking, paymentURL, nil
 }
 func (s *BookingService) GetBookingDetail(ctx context.Context, bookingID string, userID int64) (*domain.Booking, error) {

@@ -60,3 +60,7 @@ type EventProvider interface {
 type BookingPublisher interface {
 	PublishBookingCreated(ctx context.Context, booking *Booking) error
 }
+
+type PaymentProvider interface {
+	CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64) (string, error) // Returns paymentURL
+}

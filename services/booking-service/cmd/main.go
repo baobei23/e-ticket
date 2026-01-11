@@ -31,6 +31,11 @@ func main() {
 		log.Fatalf("failed to init event client: %v", err)
 	}
 
+	paymentAdapter, err := clients.NewPaymentGRPCClient()
+	if err != nil {
+		log.Fatalf("failed to init payment client: %v", err)
+	}
+
 	//Init RabbitMQ
 	amqpURL := env.GetString("RABBITMQ_URI", "amqp://admin:admin@rabbitmq:5672/")
 	mqClient, err := messaging.NewRabbitMQClient(amqpURL)
@@ -44,7 +49,7 @@ func main() {
 
 	// Init Service
 	repo := repository.NewInMemoryBookingRepository()
-	svc := service.NewBookingService(repo, eventAdapter, publisher)
+	svc := service.NewBookingService(repo, eventAdapter, publisher, paymentAdapter)
 
 	// Init gRPC Server
 	grpcServer := grpcserver.NewServer()
