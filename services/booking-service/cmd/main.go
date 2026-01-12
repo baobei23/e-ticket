@@ -51,6 +51,9 @@ func main() {
 	repo := repository.NewInMemoryBookingRepository()
 	svc := service.NewBookingService(repo, eventAdapter, publisher, paymentAdapter)
 
+	paymentConsumer := events.NewPaymentConsumer(mqClient, svc)
+	paymentConsumer.Start()
+
 	// Init gRPC Server
 	grpcServer := grpcserver.NewServer()
 

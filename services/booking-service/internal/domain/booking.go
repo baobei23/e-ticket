@@ -49,6 +49,8 @@ type BookingRepository interface {
 type BookingService interface {
 	CreateBooking(ctx context.Context, userID int64, eventID int64, quantity int32) (*Booking, string, error) // Returns Booking & PaymentURL
 	GetBookingDetail(ctx context.Context, bookingID string, userID int64) (*Booking, error)
+	ConfirmBooking(ctx context.Context, bookingID string) error
+	FailBooking(ctx context.Context, bookingID string) error
 }
 
 // Event-Service Provider Interface

@@ -34,10 +34,9 @@ func (s *BookingService) CreateBooking(ctx context.Context, userID int64, eventI
 	}
 
 	if !isAvailable {
-		return nil, "", errors.New("insufficient seats or event not found")
+		return nil, "", errors.New("insufficient seats")
 	}
 
-	// 2. Logic selanjutnya sama...
 	totalAmount := unitPrice * float64(quantity)
 	bookingID := uuid.New().String()
 
@@ -55,22 +54,17 @@ func (s *BookingService) CreateBooking(ctx context.Context, userID int64, eventI
 		return nil, "", err
 	}
 
-	// PUBLISH EVENT
-	// Kita lakukan secara async (go routine) atau sync tergantung kebutuhan.
-	// Jika RabbitMQ mati, apakah booking harus gagal?
-	// Untuk reliability tinggi, sebaiknya sync dulu atau gunakan Outbox Pattern.
-	// Untuk sekarang, kita panggil sync tapi log error saja (soft failure).
+	// TODO: outbox pattern
 
 	if err := s.publisher.PublishBookingCreated(ctx, booking); err != nil {
-		// Warning: Event gagal terkirim. Stok mungkin tidak ter-reserve.
-		// Idealnya: Rollback booking atau simpan ke Outbox table.
+		// TODO: outbox pattern
 	}
 
 	paymentURL, err := s.paymentProvider.CreatePayment(ctx, bookingID, userID, totalAmount)
 	if err != nil {
-		// Log error, tapi booking sudah terbentuk.
-		// User harus bisa retry payment nanti (Endpoint GetBookingDetail harus return paymentURL juga kalau belum lunas).
-		// Untuk simplicity sekarang, kita return error atau string kosong.
+		// Log error, but booking is created
+		// User should be able to retry payment later (Endpoint GetBookingDetail should return paymentURL also if not paid),
+		// for simplicity, we return error or empty string.
 		return nil, "", fmt.Errorf("failed to create payment session: %w", err)
 	}
 	return booking, paymentURL, nil
@@ -86,4 +80,12 @@ func (s *BookingService) GetBookingDetail(ctx context.Context, bookingID string,
 	}
 
 	return booking, nil
+}
+
+func (s *BookingService) ConfirmBooking(ctx context.Context, bookingID string) error {
+	return s.repo.UpdateStatus(ctx, bookingID, domain.StatusConfirmed)
+}
+
+func (s *BookingService) FailBooking(ctx context.Context, bookingID string) error {
+	return s.repo.UpdateStatus(ctx, bookingID, domain.StatusFailed)
 }
