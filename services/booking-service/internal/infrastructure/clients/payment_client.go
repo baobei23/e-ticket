@@ -3,9 +3,9 @@ package clients
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/baobei23/e-ticket/services/booking-service/internal/domain"
+	"github.com/baobei23/e-ticket/shared/env"
 	pb "github.com/baobei23/e-ticket/shared/proto/payment"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -17,11 +17,7 @@ type PaymentGRPCClient struct {
 }
 
 func NewPaymentGRPCClient() (domain.PaymentProvider, error) {
-	addr := os.Getenv("PAYMENT_SERVICE_ADDR")
-	if addr == "" {
-		addr = "payment-service:50053" // Port Payment Service
-	}
-
+	addr := env.GetString("PAYMENT_SERVICE_ADDRESS", "payment-service:50053")
 	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to payment service: %w", err)

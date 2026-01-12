@@ -1,8 +1,7 @@
 package grpc_clients
 
 import (
-	"os"
-
+	"github.com/baobei23/e-ticket/shared/env"
 	"github.com/baobei23/e-ticket/shared/proto/payment"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -14,10 +13,7 @@ type PaymentServiceClient struct {
 }
 
 func NewPaymentServiceClient() (*PaymentServiceClient, error) {
-	svcAddr := os.Getenv("PAYMENT_SERVICE_ADDRESS")
-	if svcAddr == "" {
-		svcAddr = "payment-service:50053"
-	}
+	svcAddr := env.GetString("PAYMENT_SERVICE_ADDRESS", "payment-service:50053")
 
 	conn, err := grpc.NewClient(svcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {

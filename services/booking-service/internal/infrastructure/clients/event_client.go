@@ -3,9 +3,9 @@ package clients
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/baobei23/e-ticket/services/booking-service/internal/domain"
+	"github.com/baobei23/e-ticket/shared/env"
 	pb "github.com/baobei23/e-ticket/shared/proto/event"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -18,10 +18,7 @@ type EventGRPCClient struct {
 
 func NewEventGRPCClient() (domain.EventProvider, error) {
 
-	addr := os.Getenv("EVENT_SERVICE_ADDR")
-	if addr == "" {
-		addr = "event-service:50051"
-	}
+	addr := env.GetString("EVENT_SERVICE_ADDRESS", "event-service:50051")
 
 	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {

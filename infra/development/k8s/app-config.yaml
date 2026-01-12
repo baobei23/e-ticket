@@ -5,5 +5,8 @@ metadata:
 data:
   ENVIRONMENT: 'development'
   GATEWAY_HTTP_ADDR: ':8080'
+  BOOKING_SERVICE_ADDRESS: 'booking-service:50052'
+  EVENT_SERVICE_ADDRESS: 'event-service:50051'
+  PAYMENT_SERVICE_ADDRESS: 'payment-service:50053'
   STRIPE_SUCCESS_URL: 'http://localhost:8080/success'
   STRIPE_CANCEL_URL: 'http://localhost:8080/cancel'
