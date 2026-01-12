@@ -10,3 +10,14 @@ data:
   PAYMENT_SERVICE_ADDRESS: 'payment-service:50053'
   STRIPE_SUCCESS_URL: 'http://localhost:8080/success'
   STRIPE_CANCEL_URL: 'http://localhost:8080/cancel'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-init-script
+data:
+  init.sql: |
+    CREATE DATABASE auth_service;
+    CREATE DATABASE event_service;
+    CREATE DATABASE booking_service;
+    CREATE DATABASE payment_service;
