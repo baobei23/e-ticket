@@ -41,7 +41,7 @@ func (s *StripeGateway) CreateSession(ctx context.Context, payment *domain.Payme
 		},
 		Mode:       stripe.String(string(stripe.CheckoutSessionModePayment)),
 		SuccessURL: stripe.String(s.successURL + "?session_id={CHECKOUT_SESSION_ID}"),
-		CancelURL:  stripe.String(s.cancelURL),
+		CancelURL:  stripe.String(s.cancelURL + "?session_id={CHECKOUT_SESSION_ID}"),
 
 		Metadata: map[string]string{
 			"booking_id": payment.BookingID,

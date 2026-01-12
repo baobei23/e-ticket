@@ -15,25 +15,28 @@ import (
 )
 
 type PaymentService struct {
-	repo    domain.PaymentRepository
-	gateway domain.PaymentGateway
-	// publisher domain.PaymentPublisher (Nanti untuk webhook)
+	repo      domain.PaymentRepository
+	gateway   domain.PaymentGateway
+	publisher domain.PaymentPublisher
 }
 
-func NewPaymentService(repo domain.PaymentRepository, gateway domain.PaymentGateway) domain.PaymentService {
+func NewPaymentService(
+	repo domain.PaymentRepository,
+	gateway domain.PaymentGateway,
+	publisher domain.PaymentPublisher) *PaymentService {
 	return &PaymentService{
-		repo:    repo,
-		gateway: gateway,
+		repo:      repo,
+		gateway:   gateway,
+		publisher: publisher,
 	}
 }
 
 func (s *PaymentService) CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64) (*domain.Payment, error) {
-	// 1. Validasi dasar
+
 	if amount <= 0 {
 		return nil, errors.New("invalid amount")
 	}
 
-	// 2. Buat Payment ID
 	paymentID := uuid.New().String()
 	payment := &domain.Payment{
 		ID:        paymentID,
@@ -44,7 +47,6 @@ func (s *PaymentService) CreatePayment(ctx context.Context, bookingID string, us
 		Status:    domain.PaymentStatusPending,
 	}
 
-	// 3. Panggil Stripe Gateway
 	stripeID, paymentURL, err := s.gateway.CreateSession(ctx, payment)
 	if err != nil {
 		return nil, err
@@ -53,7 +55,6 @@ func (s *PaymentService) CreatePayment(ctx context.Context, bookingID string, us
 	payment.StripeID = stripeID
 	payment.PaymentURL = paymentURL
 
-	// 4. Simpan ke Repo
 	if err := s.repo.Create(ctx, payment); err != nil {
 		return nil, err
 	}
@@ -67,7 +68,7 @@ func (s *PaymentService) HandleWebhook(ctx context.Context, payload []byte, sigH
 		return fmt.Errorf("STRIPE_WEBHOOK_SECRET is not set")
 	}
 
-	// 1. Verify signature from Stripe
+	// Verify signature from Stripe
 	event, err := webhook.ConstructEventWithOptions(payload, sigHeader, webhookSecret, webhook.ConstructEventOptions{
 		IgnoreAPIVersionMismatch: true,
 	})
@@ -78,7 +79,7 @@ func (s *PaymentService) HandleWebhook(ctx context.Context, payload []byte, sigH
 
 	log.Printf("Received Webhook Event: %s", event.Type)
 
-	// 2. Handle event type
+	// Handle event type
 	switch event.Type {
 	case "checkout.session.completed":
 		var session stripe.CheckoutSession
@@ -94,14 +95,20 @@ func (s *PaymentService) HandleWebhook(ctx context.Context, payload []byte, sigH
 
 		log.Printf("Payment success for Payment ID: %s", paymentID)
 
-		// 3. Update status payment in repo
+		// Update status payment
 		if err := s.repo.UpdateStatus(ctx, paymentID, domain.PaymentStatusSuccess); err != nil {
 			return fmt.Errorf("failed to update payment status: %w", err)
 		}
 
-		// TODO: 4. Publish event to RabbitMQ (PaymentSuccess) so that Booking Service knows
-		// s.publisher.PublishPaymentSuccess(...)
+		paymentData, err := s.repo.GetByBookingID(ctx, session.Metadata["booking_id"])
+		if err != nil {
+			log.Printf("Failed to get payment data: %v", err)
+			return fmt.Errorf("failed to get payment data: %w", err)
+		}
 
+		if err := s.publisher.PublishPaymentSuccess(ctx, paymentData); err != nil {
+			log.Printf("Failed to publish PaymentSuccess: %v", err)
+		}
 	case "checkout.session.expired":
 		// Handle expired...
 	}

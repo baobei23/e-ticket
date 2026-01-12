@@ -36,3 +36,8 @@ type PaymentService interface {
 	CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64) (*Payment, error)
 	HandleWebhook(ctx context.Context, payload []byte, sigHeader string) error
 }
+
+type PaymentPublisher interface {
+	PublishPaymentSuccess(ctx context.Context, payment *Payment) error
+	PublishPaymentFailed(ctx context.Context, payment *Payment, reason string) error
+}
