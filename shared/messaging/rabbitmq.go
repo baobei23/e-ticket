@@ -77,6 +77,14 @@ func (c *RabbitMQClient) setupTopology() error {
 		return err
 	}
 
+	if err := c.declareAndBind(contracts.QueuePaymentSuccess, []string{"PaymentSuccess"}); err != nil {
+		return err
+	}
+
+	if err := c.declareAndBind(contracts.QueuePaymentFailed, []string{"PaymentFailed"}); err != nil {
+		return err
+	}
+
 	return nil
 }
 
