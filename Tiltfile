@@ -14,10 +14,10 @@ k8s_yaml('./infra/development/k8s/rabbitmq-deployment.yaml')
 k8s_resource('rabbitmq', port_forwards=['5672', '15672'], labels='tooling')
 ### End RabbitMQ ###
 
-# ### PostgreSQL ###
-# k8s_yaml('./infra/development/k8s/postgres-deployment.yaml')
-# k8s_resource('postgres', port_forwards=['5432'], labels='tooling')
-# ### End PostgreSQL ###
+### PostgreSQL ###
+k8s_yaml('./infra/development/k8s/postgres-deployment.yaml')
+k8s_resource('eticket-postgres', port_forwards=['5432'], labels='tooling')
+### End PostgreSQL ###
 
 ### API Gateway ###
 
@@ -76,7 +76,7 @@ docker_build_with_restart(
 )
 
 k8s_yaml('./infra/development/k8s/event-service-deployment.yaml')
-k8s_resource('event-service', resource_deps=['event-service-compile', 'rabbitmq'], labels="services")
+k8s_resource('event-service', resource_deps=['event-service-compile', 'rabbitmq', 'eticket-postgres'], labels="services")
 
 ### End of Event Service ###
 ### Booking Service ###
@@ -106,7 +106,7 @@ docker_build_with_restart(
 )
 
 k8s_yaml('./infra/development/k8s/booking-service-deployment.yaml')
-k8s_resource('booking-service', resource_deps=['booking-service-compile', 'rabbitmq'], labels="services")
+k8s_resource('booking-service', resource_deps=['booking-service-compile', 'rabbitmq', 'eticket-postgres'], labels="services")
 
 ### End of Booking Service ###
 ### Payment Service ###
@@ -136,6 +136,6 @@ docker_build_with_restart(
 )
 
 k8s_yaml('./infra/development/k8s/payment-service-deployment.yaml')
-k8s_resource('payment-service', resource_deps=['payment-service-compile', 'rabbitmq'], labels="services")
+k8s_resource('payment-service', resource_deps=['payment-service-compile', 'rabbitmq', 'eticket-postgres'], labels="services")
 
 ### End of Payment Service ###
