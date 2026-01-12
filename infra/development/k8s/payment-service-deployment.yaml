@@ -29,7 +29,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: STRIPE_API_KEY
-                  name: secrets
+                  name: stripe-secrets
             - name: STRIPE_SUCCESS_URL
               valueFrom:
                 configMapKeyRef:
@@ -44,7 +44,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: STRIPE_WEBHOOK_SECRET
-                  name: secrets
+                  name: stripe-secrets
 ---
 apiVersion: v1
 kind: Service
