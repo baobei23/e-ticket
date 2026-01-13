@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     user_id BIGINT NOT NULL,
     event_id BIGINT NOT NULL,
     quantity INTEGER NOT NULL,
-    total_amount DECIMAL(10, 2) NOT NULL,
+    total_amount DECIMAL(20, 2) NOT NULL,
     status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

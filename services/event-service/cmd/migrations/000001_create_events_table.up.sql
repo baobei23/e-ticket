@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS events (
     end_time TIMESTAMP WITH TIME ZONE NOT NULL,
     total_seats INTEGER NOT NULL,
     available_seats INTEGER NOT NULL,
-    price DECIMAL(10, 2) NOT NULL
+    price DECIMAL(20, 2) NOT NULL
 );
 
 INSERT INTO events (

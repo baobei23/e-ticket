@@ -45,6 +45,16 @@ spec:
                 secretKeyRef:
                   key: STRIPE_WEBHOOK_SECRET
                   name: stripe-secrets
+            - name: POSTGRES_URI
+              valueFrom:
+                secretKeyRef:
+                  key: payment_db_uri
+                  name: db-credentials
+            - name: RABBITMQ_URI
+              valueFrom:
+                secretKeyRef:
+                  key: uri
+                  name: rabbitmq-credentials
 ---
 apiVersion: v1
 kind: Service

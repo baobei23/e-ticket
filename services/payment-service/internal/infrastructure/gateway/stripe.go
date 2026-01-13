@@ -26,7 +26,7 @@ func NewStripeGateway(apiKey, successURL, cancelURL string) *StripeGateway {
 
 func (s *StripeGateway) CreateSession(ctx context.Context, payment *domain.Payment) (string, string, error) {
 	params := &stripe.CheckoutSessionParams{
-		PaymentMethodTypes: stripe.StringSlice([]string{"card"}), // Can add 'bca_klikpay', etc
+		PaymentMethodTypes: stripe.StringSlice([]string{"card", "grabpay"}),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
 				PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{

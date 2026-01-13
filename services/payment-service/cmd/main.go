@@ -7,12 +7,14 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/baobei23/e-ticket/services/payment-service/internal/infrastructure/events"
 	"github.com/baobei23/e-ticket/services/payment-service/internal/infrastructure/gateway"
 	"github.com/baobei23/e-ticket/services/payment-service/internal/infrastructure/grpc"
 	"github.com/baobei23/e-ticket/services/payment-service/internal/infrastructure/repository"
 	"github.com/baobei23/e-ticket/services/payment-service/internal/service"
+	"github.com/baobei23/e-ticket/shared/db"
 	"github.com/baobei23/e-ticket/shared/env"
 	"github.com/baobei23/e-ticket/shared/messaging"
 
@@ -30,29 +32,37 @@ func main() {
 	defer mqClient.Close()
 	publisher := events.NewPaymentEventPublisher(mqClient)
 
-	// 1. Init Listener (Port 50053)
+	// Init Listener (Port 50053)
 	lis, err := net.Listen("tcp", ":50053")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	// 2. Setup Stripe Gateway
+	dbURI := env.GetString("POSTGRES_URI", "postgresql://postgres:postgres@eticket-postgres:5432/payment_service")
+	log.Println("Connecting to database...")
+	pool, err := db.New(dbURI, 10, 5, 10*time.Second, 30*time.Second)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+	defer pool.Close()
+
+	// Init Stripe Gateway
 	stripeKey := env.GetString("STRIPE_API_KEY", "")
 	successURL := env.GetString("STRIPE_SUCCESS_URL", "http://localhost:8080/success")
 	cancelURL := env.GetString("STRIPE_CANCEL_URL", "http://localhost:8080/cancel")
 
 	stripeGateway := gateway.NewStripeGateway(stripeKey, successURL, cancelURL)
 
-	// 3. Init Dependencies
+	// Init Dependencies
 	repo := repository.NewInMemoryPaymentRepository()
 	svc := service.NewPaymentService(repo, stripeGateway, publisher)
 
-	// 4. Init gRPC Server
+	// Init gRPC Server
 	server := grpcserver.NewServer()
 	grpc.NewPaymentHandler(server, svc)
 	reflection.Register(server)
 
-	// 5. Run Server
+	// Run Server
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 
