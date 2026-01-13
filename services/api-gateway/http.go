@@ -6,9 +6,9 @@ import (
 	"strconv"
 
 	"github.com/baobei23/e-ticket/services/api-gateway/grpc_clients"
-	"github.com/baobei23/e-ticket/shared/proto/booking"
-	"github.com/baobei23/e-ticket/shared/proto/event"
-	"github.com/baobei23/e-ticket/shared/proto/payment"
+	bookingpb "github.com/baobei23/e-ticket/shared/proto/booking"
+	eventpb "github.com/baobei23/e-ticket/shared/proto/event"
+	paymentpb "github.com/baobei23/e-ticket/shared/proto/payment"
 	"github.com/gin-gonic/gin"
 )
 
@@ -52,8 +52,8 @@ func (s *GatewayServer) getEventsHandler(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	resp, err := s.eventClient.Client.GetEvents(ctx, &event.GetEventsRequest{
-		Pagination: &event.PaginationRequest{
+	resp, err := s.eventClient.Client.GetEvents(ctx, &eventpb.GetEventsRequest{
+		Pagination: &eventpb.PaginationRequest{
 			Page:  int32(page),
 			Limit: int32(limit),
 		},
@@ -76,7 +76,7 @@ func (s *GatewayServer) getEventDetailHandler(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	resp, err := s.eventClient.Client.GetEventDetail(ctx, &event.GetEventDetailRequest{
+	resp, err := s.eventClient.Client.GetEventDetail(ctx, &eventpb.GetEventDetailRequest{
 		EventId: eventId,
 	})
 
@@ -110,7 +110,7 @@ func (s *GatewayServer) checkAvailabilityHandler(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	resp, err := s.eventClient.Client.CheckAvailability(ctx, &event.CheckAvailabilityRequest{
+	resp, err := s.eventClient.Client.CheckAvailability(ctx, &eventpb.CheckAvailabilityRequest{
 		EventId:  eventId,
 		Quantity: int32(quantity),
 	})
@@ -139,7 +139,7 @@ func (s *GatewayServer) CreateBookingHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	// Panggil Booking Service via gRPC
-	resp, err := s.bookingClient.Client.CreateBooking(ctx, &booking.CreateBookingRequest{
+	resp, err := s.bookingClient.Client.CreateBooking(ctx, &bookingpb.CreateBookingRequest{
 		UserId:   req.UserID,
 		EventId:  req.EventID,
 		Quantity: req.Quantity,
@@ -174,7 +174,7 @@ func (s *GatewayServer) GetBookingDetailHandler(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	resp, err := s.bookingClient.Client.GetBookingDetail(ctx, &booking.GetBookingDetailRequest{
+	resp, err := s.bookingClient.Client.GetBookingDetail(ctx, &bookingpb.GetBookingDetailRequest{
 		BookingId: bookingID,
 		UserId:    userID,
 	})
@@ -205,7 +205,7 @@ func (s *GatewayServer) HandleStripeWebhook(c *gin.Context) {
 
 	// 2. Kirim ke Payment Service via gRPC
 	// Asumsi: client sudah ada method HandleWebhook (hasil generate proto baru)
-	_, err = s.paymentClient.Client.HandleWebhook(c.Request.Context(), &payment.HandleWebhookRequest{
+	_, err = s.paymentClient.Client.HandleWebhook(c.Request.Context(), &paymentpb.HandleWebhookRequest{
 		Payload:   payload,
 		Signature: sigHeader,
 	})

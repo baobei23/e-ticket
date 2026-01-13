@@ -4,13 +4,13 @@ import (
 	"context"
 
 	"github.com/baobei23/e-ticket/services/event-service/internal/domain"
-	"github.com/baobei23/e-ticket/shared/proto/event"
-	pb "github.com/baobei23/e-ticket/shared/proto/event"
+
+	eventpb "github.com/baobei23/e-ticket/shared/proto/event"
 	"google.golang.org/grpc"
 )
 
 type EventHandler struct {
-	pb.UnimplementedEventServiceServer
+	eventpb.UnimplementedEventServiceServer
 	service domain.EventService
 }
 
@@ -18,11 +18,11 @@ func NewEventHandler(server *grpc.Server, service domain.EventService) *EventHan
 	handler := &EventHandler{
 		service: service,
 	}
-	pb.RegisterEventServiceServer(server, handler)
+	eventpb.RegisterEventServiceServer(server, handler)
 	return handler
 }
 
-func (h *EventHandler) GetEvents(ctx context.Context, req *pb.GetEventsRequest) (*pb.GetEventsResponse, error) {
+func (h *EventHandler) GetEvents(ctx context.Context, req *eventpb.GetEventsRequest) (*eventpb.GetEventsResponse, error) {
 	page := int(req.Pagination.GetPage())
 	if page == 0 {
 		page = 1
@@ -37,7 +37,7 @@ func (h *EventHandler) GetEvents(ctx context.Context, req *pb.GetEventsRequest) 
 		return nil, err
 	}
 
-	var pbEvents []*pb.Event
+	var pbEvents []*eventpb.Event
 	for _, e := range events {
 		pbEvents = append(pbEvents, e.ToProto())
 	}
@@ -47,9 +47,9 @@ func (h *EventHandler) GetEvents(ctx context.Context, req *pb.GetEventsRequest) 
 		totalPages = int32((totalItems + int64(limit) - 1) / int64(limit))
 	}
 
-	return &pb.GetEventsResponse{
+	return &eventpb.GetEventsResponse{
 		Events: pbEvents,
-		Meta: &event.PaginationMetadata{
+		Meta: &eventpb.PaginationMetadata{
 			CurrentPage: int32(page),
 			PageLimit:   int32(limit),
 			TotalItems:  int32(totalItems),
@@ -58,24 +58,24 @@ func (h *EventHandler) GetEvents(ctx context.Context, req *pb.GetEventsRequest) 
 	}, nil
 }
 
-func (h *EventHandler) GetEventDetail(ctx context.Context, req *pb.GetEventDetailRequest) (*pb.GetEventDetailResponse, error) {
+func (h *EventHandler) GetEventDetail(ctx context.Context, req *eventpb.GetEventDetailRequest) (*eventpb.GetEventDetailResponse, error) {
 	event, err := h.service.GetEventDetail(ctx, req.EventId)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.GetEventDetailResponse{
+	return &eventpb.GetEventDetailResponse{
 		Event: event.ToProto(),
 	}, nil
 }
 
-func (h *EventHandler) CheckAvailability(ctx context.Context, req *pb.CheckAvailabilityRequest) (*pb.CheckAvailabilityResponse, error) {
+func (h *EventHandler) CheckAvailability(ctx context.Context, req *eventpb.CheckAvailabilityRequest) (*eventpb.CheckAvailabilityResponse, error) {
 	available, price, err := h.service.CheckAvailability(ctx, req.EventId, req.Quantity)
 	if err != nil {
-		return &pb.CheckAvailabilityResponse{IsAvailable: false}, nil
+		return &eventpb.CheckAvailabilityResponse{IsAvailable: false}, nil
 	}
 
-	return &pb.CheckAvailabilityResponse{
+	return &eventpb.CheckAvailabilityResponse{
 		IsAvailable: available,
 		UnitPrice:   price,
 	}, nil

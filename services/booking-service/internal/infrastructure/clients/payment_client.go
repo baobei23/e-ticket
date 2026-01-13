@@ -6,13 +6,13 @@ import (
 
 	"github.com/baobei23/e-ticket/services/booking-service/internal/domain"
 	"github.com/baobei23/e-ticket/shared/env"
-	pb "github.com/baobei23/e-ticket/shared/proto/payment"
+	paymentpb "github.com/baobei23/e-ticket/shared/proto/payment"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type PaymentGRPCClient struct {
-	client pb.PaymentServiceClient
+	client paymentpb.PaymentServiceClient
 	conn   *grpc.ClientConn
 }
 
@@ -23,7 +23,7 @@ func NewPaymentGRPCClient() (domain.PaymentProvider, error) {
 		return nil, fmt.Errorf("failed to connect to payment service: %w", err)
 	}
 
-	client := pb.NewPaymentServiceClient(conn)
+	client := paymentpb.NewPaymentServiceClient(conn)
 
 	return &PaymentGRPCClient{
 		client: client,
@@ -32,7 +32,7 @@ func NewPaymentGRPCClient() (domain.PaymentProvider, error) {
 }
 
 func (c *PaymentGRPCClient) CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64) (string, error) {
-	resp, err := c.client.CreatePayment(ctx, &pb.CreatePaymentRequest{
+	resp, err := c.client.CreatePayment(ctx, &paymentpb.CreatePaymentRequest{
 		BookingId: bookingID,
 		UserId:    userID,
 		Amount:    amount,

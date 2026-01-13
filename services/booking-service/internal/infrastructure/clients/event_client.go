@@ -6,13 +6,13 @@ import (
 
 	"github.com/baobei23/e-ticket/services/booking-service/internal/domain"
 	"github.com/baobei23/e-ticket/shared/env"
-	pb "github.com/baobei23/e-ticket/shared/proto/event"
+	eventpb "github.com/baobei23/e-ticket/shared/proto/event"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type EventGRPCClient struct {
-	client pb.EventServiceClient
+	client eventpb.EventServiceClient
 	conn   *grpc.ClientConn
 }
 
@@ -25,7 +25,7 @@ func NewEventGRPCClient() (domain.EventProvider, error) {
 		return nil, fmt.Errorf("failed to connect to event service: %w", err)
 	}
 
-	client := pb.NewEventServiceClient(conn)
+	client := eventpb.NewEventServiceClient(conn)
 
 	return &EventGRPCClient{
 		client: client,
@@ -38,7 +38,7 @@ func (c *EventGRPCClient) Close() error {
 }
 
 func (c *EventGRPCClient) CheckAvailability(ctx context.Context, eventID int64, quantity int32) (bool, float64, error) {
-	resp, err := c.client.CheckAvailability(ctx, &pb.CheckAvailabilityRequest{
+	resp, err := c.client.CheckAvailability(ctx, &eventpb.CheckAvailabilityRequest{
 		EventId:  eventID,
 		Quantity: quantity,
 	})

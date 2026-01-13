@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	pb "github.com/baobei23/e-ticket/shared/proto/booking"
+	bookingpb "github.com/baobei23/e-ticket/shared/proto/booking"
 )
 
 // Enum Status
@@ -25,8 +25,8 @@ type Booking struct {
 	CreatedAt   time.Time
 }
 
-func (b *Booking) ToProto() *pb.Booking {
-	return &pb.Booking{
+func (b *Booking) ToProto() *bookingpb.Booking {
+	return &bookingpb.Booking{
 		BookingId:   b.ID,
 		UserId:      b.UserID,
 		EventId:     b.EventID,

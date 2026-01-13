@@ -2,13 +2,13 @@ package grpc_clients
 
 import (
 	"github.com/baobei23/e-ticket/shared/env"
-	"github.com/baobei23/e-ticket/shared/proto/payment"
+	paymentpb "github.com/baobei23/e-ticket/shared/proto/payment"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type PaymentServiceClient struct {
-	Client payment.PaymentServiceClient
+	Client paymentpb.PaymentServiceClient
 	conn   *grpc.ClientConn
 }
 
@@ -20,7 +20,7 @@ func NewPaymentServiceClient() (*PaymentServiceClient, error) {
 		return nil, err
 	}
 
-	client := payment.NewPaymentServiceClient(conn)
+	client := paymentpb.NewPaymentServiceClient(conn)
 
 	return &PaymentServiceClient{
 		Client: client,

@@ -2,13 +2,13 @@ package grpc_clients
 
 import (
 	"github.com/baobei23/e-ticket/shared/env"
-	"github.com/baobei23/e-ticket/shared/proto/event"
+	eventpb "github.com/baobei23/e-ticket/shared/proto/event"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type EventServiceClient struct {
-	Client event.EventServiceClient
+	Client eventpb.EventServiceClient
 	conn   *grpc.ClientConn
 }
 
@@ -20,7 +20,7 @@ func NewEventServiceClient() (*EventServiceClient, error) {
 		return nil, err
 	}
 
-	client := event.NewEventServiceClient(conn)
+	client := eventpb.NewEventServiceClient(conn)
 
 	return &EventServiceClient{
 		Client: client,

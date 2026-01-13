@@ -2,13 +2,13 @@ package grpc_clients
 
 import (
 	"github.com/baobei23/e-ticket/shared/env"
-	"github.com/baobei23/e-ticket/shared/proto/booking"
+	bookingpb "github.com/baobei23/e-ticket/shared/proto/booking"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type BookingServiceClient struct {
-	Client booking.BookingServiceClient
+	Client bookingpb.BookingServiceClient
 	conn   *grpc.ClientConn
 }
 
@@ -20,7 +20,7 @@ func NewBookingServiceClient() (*BookingServiceClient, error) {
 		return nil, err
 	}
 
-	client := booking.NewBookingServiceClient(conn)
+	client := bookingpb.NewBookingServiceClient(conn)
 
 	return &BookingServiceClient{
 		Client: client,

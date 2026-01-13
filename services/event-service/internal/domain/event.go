@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	pb "github.com/baobei23/e-ticket/shared/proto/event"
+	eventpb "github.com/baobei23/e-ticket/shared/proto/event"
 )
 
 type Event struct {
@@ -19,8 +19,8 @@ type Event struct {
 	Price          float64
 }
 
-func (e *Event) ToProto() *pb.Event {
-	return &pb.Event{
+func (e *Event) ToProto() *eventpb.Event {
+	return &eventpb.Event{
 		Id:             e.ID,
 		Name:           e.Name,
 		Description:    e.Description,
