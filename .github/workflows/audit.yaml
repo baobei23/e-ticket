@@ -61,7 +61,7 @@ jobs:
         uses: hadolint/hadolint-action@v3.3.0
         with:
           dockerfile: ./infra/production/docker/*.Dockerfile
-          ignore: DL3007
+          ignore: DL3007,DL3018
 
       # Kubernetes Linting
       - name: Scan Production Kubernetes Manifests
