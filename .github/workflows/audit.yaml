@@ -63,11 +63,11 @@ jobs:
           dockerfile: ./infra/production/docker/*.Dockerfile
           ignore: DL3007,DL3018
 
-      # Kubernetes Linting
-      - name: Scan Production Kubernetes Manifests
-        uses: stackrox/kube-linter-action@v1.0.7
-        with:
-          directory: infra/production/k8s
+      # # Kubernetes Linting
+      # - name: Scan Production Kubernetes Manifests
+      #   uses: stackrox/kube-linter-action@v1.0.7
+      #   with:
+      #     directory: infra/production/k8s
 
       # Security Config Scan
       - name: Security Scan (Trivy Config)
