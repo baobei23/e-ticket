@@ -8,6 +8,7 @@ data:
   BOOKING_SERVICE_ADDRESS: 'booking-service:50052'
   EVENT_SERVICE_ADDRESS: 'event-service:50051'
   PAYMENT_SERVICE_ADDRESS: 'payment-service:50053'
+  AUTH_SERVICE_ADDRESS: 'auth-service:50054'
   STRIPE_SUCCESS_URL: 'http://localhost:8080/success'
   STRIPE_CANCEL_URL: 'http://localhost:8080/cancel'
 ---

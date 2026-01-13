@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: e-ticket/auth-service
+          ports:
+            - containerPort: 50054
+          resources:
+            requests:
+              memory: '64Mi'
+              cpu: '100m'
+            limits:
+              memory: '128Mi'
+              cpu: '200m'
+          env:
+            - name: POSTGRES_URI
+              valueFrom:
+                secretKeyRef:
+                  key: auth_db_uri
+                  name: db-credentials
+            - name: RABBITMQ_URI
+              valueFrom:
+                secretKeyRef:
+                  key: uri
+                  name: rabbitmq-credentials
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - port: 50054
+      name: grpc
+      targetPort: 50054
+  type: ClusterIP
