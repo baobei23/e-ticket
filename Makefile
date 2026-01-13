@@ -44,15 +44,20 @@ migrate-up:
 .PHONY: migrate-down
 migrate-down:
 	@if [ -z "$(service)" ]; then \
-		echo "Usage: make migrate-down service=<service_name>"; \
-		exit 1; \
+		echo "Rolling back ALL services..."; \
+		$(MAKE) migrate-down-event; \
+		$(MAKE) migrate-down-booking; \
+		$(MAKE) migrate-down-payment; \
+		$(MAKE) migrate-down-auth; \
+	else \
+		echo "Rolling back $(service)-service..."; \
+		migrate -path services/$(service)-service/cmd/migrations -database "$(DB_DSN)/$(service)_service?sslmode=$(DB_SSL)" down; \
 	fi
-	@echo "Rolling back $(service)-service..."; \
-	migrate -path services/$(service)-service/cmd/migrations -database "$(DB_DSN)/$(service)_service?sslmode=$(DB_SSL)" down
-
 # --- Individual Service Shortcuts (Optional) ---
 .PHONY: migrate-up-event migrate-up-booking migrate-up-payment migrate-up-auth
+.PHONY: migrate-down-event migrate-down-booking migrate-down-payment migrate-down-auth
 
+# --- Migrate Up Shortcuts ---
 migrate-up-event:
 	@migrate -path services/event-service/cmd/migrations -database "$(DB_DSN)/event_service?sslmode=$(DB_SSL)" up
 
@@ -64,3 +69,16 @@ migrate-up-payment:
 
 migrate-up-auth:
 	@migrate -path services/auth-service/cmd/migrations -database "$(DB_DSN)/auth_service?sslmode=$(DB_SSL)" up
+
+# --- Migrate Down Shortcuts ---
+migrate-down-event:
+	@migrate -path services/event-service/cmd/migrations -database "$(DB_DSN)/event_service?sslmode=$(DB_SSL)" down
+
+migrate-down-booking:
+	@migrate -path services/booking-service/cmd/migrations -database "$(DB_DSN)/booking_service?sslmode=$(DB_SSL)" down
+
+migrate-down-payment:
+	@migrate -path services/payment-service/cmd/migrations -database "$(DB_DSN)/payment_service?sslmode=$(DB_SSL)" down
+
+migrate-down-auth:
+	@migrate -path services/auth-service/cmd/migrations -database "$(DB_DSN)/auth_service?sslmode=$(DB_SSL)" down
