@@ -67,7 +67,7 @@ jobs:
       - name: Scan Production Kubernetes Manifests
         uses: stackrox/kube-linter-action@v1.0.7
         with:
-          args: lint infra
+          directory: infra
 
       # Security Config Scan
       - name: Security Scan (Trivy Config)
