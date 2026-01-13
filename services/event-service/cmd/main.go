@@ -7,11 +7,13 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/baobei23/e-ticket/services/event-service/internal/infrastructure/events"
 	"github.com/baobei23/e-ticket/services/event-service/internal/infrastructure/grpc"
 	"github.com/baobei23/e-ticket/services/event-service/internal/infrastructure/repository"
 	"github.com/baobei23/e-ticket/services/event-service/internal/service"
+	"github.com/baobei23/e-ticket/shared/db"
 	"github.com/baobei23/e-ticket/shared/env"
 	"github.com/baobei23/e-ticket/shared/messaging"
 	grpcserver "google.golang.org/grpc"
@@ -19,6 +21,7 @@ import (
 
 func main() {
 
+	// Init RabbitMQ
 	amqpURL := env.GetString("RABBITMQ_URI", "amqp://admin:admin@rabbitmq:5672/")
 	mqClient, err := messaging.NewRabbitMQClient(amqpURL)
 	if err != nil {
@@ -26,20 +29,29 @@ func main() {
 	}
 	defer mqClient.Close()
 
-	// 1. Init Listener
+	// Init Listener
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	// 2. Init Dependencies
-	repo := repository.NewInMemoryRepository()
+	// Init Database
+	dbURI := env.GetString("POSTGRES_URI", "postgresql://postgres:postgres@eticket-postgres:5432/event_service")
+	log.Println("Connecting to database...")
+	pool, err := db.New(dbURI, 10, 5, 10*time.Second, 30*time.Second)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+	defer pool.Close()
+
+	// Init Dependencies
+	repo := repository.NewPostgresRepository(pool)
 	service := service.NewEventService(repo)
 
 	consumer := events.NewEventConsumer(mqClient, service)
 	consumer.Start()
 
-	// 3. Init gRPC Server
+	// Init gRPC Server
 	grpcServer := grpcserver.NewServer()
 	grpc.NewEventHandler(grpcServer, service)
 

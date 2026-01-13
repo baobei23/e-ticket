@@ -24,6 +24,17 @@ spec:
             limits:
               memory: '128Mi'
               cpu: '200m'
+          env:
+            - name: POSTGRES_URI
+              valueFrom:
+                secretKeyRef:
+                  key: event_db_uri
+                  name: db-credentials
+            - name: RABBITMQ_URI
+              valueFrom:
+                secretKeyRef:
+                  key: uri
+                  name: rabbitmq-credentials
 ---
 apiVersion: v1
 kind: Service
