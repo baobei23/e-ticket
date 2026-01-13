@@ -7,12 +7,14 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/baobei23/e-ticket/services/booking-service/internal/infrastructure/clients"
 	"github.com/baobei23/e-ticket/services/booking-service/internal/infrastructure/events"
 	"github.com/baobei23/e-ticket/services/booking-service/internal/infrastructure/grpc"
 	"github.com/baobei23/e-ticket/services/booking-service/internal/infrastructure/repository"
 	"github.com/baobei23/e-ticket/services/booking-service/internal/service"
+	"github.com/baobei23/e-ticket/shared/db"
 	"github.com/baobei23/e-ticket/shared/env"
 	"github.com/baobei23/e-ticket/shared/messaging"
 
@@ -44,11 +46,19 @@ func main() {
 	}
 	defer mqClient.Close()
 
+	dbURI := env.GetString("POSTGRES_URI", "postgresql://postgres:postgres@eticket-postgres:5432/booking_service")
+	log.Println("Connecting to database...")
+	pool, err := db.New(dbURI, 10, 5, 10*time.Second, 30*time.Second)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+	defer pool.Close()
+
 	// Init Publisher
 	publisher := events.NewBookingEventPublisher(mqClient)
 
 	// Init Service
-	repo := repository.NewInMemoryBookingRepository()
+	repo := repository.NewPostgresRepository(pool)
 	svc := service.NewBookingService(repo, eventAdapter, publisher, paymentAdapter)
 
 	paymentConsumer := events.NewPaymentConsumer(mqClient, svc)
