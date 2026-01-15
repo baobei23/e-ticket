@@ -9,8 +9,10 @@ data:
   EVENT_SERVICE_ADDRESS: 'event-service:50051'
   PAYMENT_SERVICE_ADDRESS: 'payment-service:50053'
   AUTH_SERVICE_ADDRESS: 'auth-service:50054'
+  NOTIFICATION_SERVICE_ADDRESS: 'notification-service:50055'
   STRIPE_SUCCESS_URL: 'http://localhost:8080/success'
   STRIPE_CANCEL_URL: 'http://localhost:8080/cancel'
+  ACTIVATION_URL_BASE: 'http://localhost:8080/activate'
 ---
 apiVersion: v1
 kind: ConfigMap

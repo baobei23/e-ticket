@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: e-ticket/notification-service
+          resources:
+            requests:
+              memory: '64Mi'
+              cpu: '100m'
+            limits:
+              memory: '128Mi'
+              cpu: '200m'
+          env:
+            - name: RABBITMQ_URI
+              valueFrom:
+                secretKeyRef:
+                  key: uri
+                  name: rabbitmq-credentials
+            - name: SMTP_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: host
+                  name: smtp-credentials
+            - name: SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: port
+                  name: smtp-credentials
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  key: user
+                  name: smtp-credentials
+            - name: SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: pass
+                  name: smtp-credentials
+            - name: SMTP_FROM
+              valueFrom:
+                secretKeyRef:
+                  key: from
+                  name: smtp-credentials
+            - name: ACTIVATION_URL_BASE
+              valueFrom:
+                configMapKeyRef:
+                  key: ACTIVATION_URL_BASE
+                  name: app-config

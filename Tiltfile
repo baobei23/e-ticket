@@ -170,3 +170,35 @@ k8s_yaml('./infra/development/k8s/auth-service-deployment.yaml')
 k8s_resource('auth-service', resource_deps=['auth-service-compile', 'eticket-postgres', 'rabbitmq'], labels="services")
 
 ### End of Auth Service ###
+### Notification Service ###
+
+notification_compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/notification-service ./services/notification-service/cmd/main.go'
+if os.name == 'nt':
+  notification_compile_cmd = './infra/development/docker/notification-build.bat'
+
+local_resource(
+  'notification-service-compile',
+  notification_compile_cmd,
+  deps=['./services/notification-service', './shared'],
+  labels="compiles"
+)
+
+docker_build_with_restart(
+  'e-ticket/notification-service',
+  '.',
+  entrypoint=['/app/build/notification-service'],
+  dockerfile='./infra/development/docker/notification-service.Dockerfile',
+  only=[
+    './build/notification-service',
+    './shared',
+  ],
+  live_update=[
+    sync('./build', '/app/build'),
+    sync('./shared', '/app/shared'),
+  ],
+)
+
+k8s_yaml('./infra/development/k8s/notification-service-deployment.yaml')
+k8s_resource('notification-service', resource_deps=['notification-service-compile', 'rabbitmq'], labels="services")
+
+### End of Notification Service ###
