@@ -85,6 +85,10 @@ func (c *RabbitMQClient) setupTopology() error {
 		return err
 	}
 
+	if err := c.declareAndBind(contracts.QueueUserActivationRequested, []string{"UserActivationRequested"}); err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -7,9 +7,10 @@ import (
 
 // Nama Queue
 const (
-	QueueBookingCreated = "booking.created"
-	QueuePaymentSuccess = "payment.success"
-	QueuePaymentFailed  = "payment.failed"
+	QueueBookingCreated          = "booking.created"
+	QueuePaymentSuccess          = "payment.success"
+	QueuePaymentFailed           = "payment.failed"
+	QueueUserActivationRequested = "user.activation_requested"
 )
 
 // Wrapper Message Standar
@@ -39,4 +40,12 @@ type PaymentSuccessEvent struct {
 type PaymentFailedEvent struct {
 	BookingID string `json:"booking_id"`
 	Reason    string `json:"reason"`
+}
+
+// Payload: User Activation Requested
+type UserActivationRequestedEvent struct {
+	UserID    int64     `json:"user_id"`
+	Email     string    `json:"email"`
+	Token     string    `json:"token"`
+	ExpiresAt time.Time `json:"expires_at"`
 }
