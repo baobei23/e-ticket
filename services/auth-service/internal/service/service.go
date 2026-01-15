@@ -15,9 +15,10 @@ type AuthService struct {
 	repo        domain.UserRepository
 	jwtSecret   []byte
 	tokenExpiry time.Duration
+	publisher   domain.UserActivationPublisher
 }
 
-func NewAuthService(repo domain.UserRepository) *AuthService {
+func NewAuthService(repo domain.UserRepository, publisher domain.UserActivationPublisher) *AuthService {
 	secret := os.Getenv("JWT_SECRET")
 	if secret == "" {
 		secret = "supersecretkey" // Default dev
@@ -26,6 +27,7 @@ func NewAuthService(repo domain.UserRepository) *AuthService {
 		repo:        repo,
 		jwtSecret:   []byte(secret),
 		tokenExpiry: 24 * time.Hour,
+		publisher:   publisher,
 	}
 }
 
@@ -43,6 +45,12 @@ func (s *AuthService) Register(ctx context.Context, email, password string) (int
 
 	plainToken := uuid.New().String()
 	if err := s.repo.Create(ctx, user, plainToken, 30*time.Minute); err != nil {
+		return 0, "", err
+	}
+
+	expiresAt := time.Now().Add(30 * time.Minute)
+
+	if err := s.publisher.Publish(ctx, user.ID, user.Email, plainToken, expiresAt); err != nil {
 		return 0, "", err
 	}
 

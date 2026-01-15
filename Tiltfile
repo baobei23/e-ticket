@@ -167,6 +167,6 @@ docker_build_with_restart(
 )
 
 k8s_yaml('./infra/development/k8s/auth-service-deployment.yaml')
-k8s_resource('auth-service', resource_deps=['auth-service-compile', 'eticket-postgres'], labels="services")
+k8s_resource('auth-service', resource_deps=['auth-service-compile', 'eticket-postgres', 'rabbitmq'], labels="services")
 
 ### End of Auth Service ###

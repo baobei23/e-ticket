@@ -35,3 +35,7 @@ type AuthService interface {
 	ValidateToken(ctx context.Context, token string) (int64, error)
 	Activate(ctx context.Context, token string) error
 }
+
+type UserActivationPublisher interface {
+	Publish(ctx context.Context, userID int64, email, token string, expiresAt time.Time) error
+}

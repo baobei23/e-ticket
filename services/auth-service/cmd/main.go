@@ -9,11 +9,13 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/baobei23/e-ticket/services/auth-service/internal/infrastructure/events"
 	"github.com/baobei23/e-ticket/services/auth-service/internal/infrastructure/grpc"
 	"github.com/baobei23/e-ticket/services/auth-service/internal/infrastructure/repository"
 	"github.com/baobei23/e-ticket/services/auth-service/internal/service"
 	"github.com/baobei23/e-ticket/shared/db"
 	"github.com/baobei23/e-ticket/shared/env"
+	"github.com/baobei23/e-ticket/shared/messaging"
 
 	grpcserver "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -26,6 +28,14 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	//Init RabbitMQ
+	amqpURL := env.GetString("RABBITMQ_URI", "amqp://admin:admin@rabbitmq:5672/")
+	mqClient, err := messaging.NewRabbitMQClient(amqpURL)
+	if err != nil {
+		log.Fatalf("Failed to init RabbitMQ: %v", err)
+	}
+	defer mqClient.Close()
+
 	// Init DB
 	dbURI := env.GetString("POSTGRES_URI", "postgresql://postgres:postgres@eticket-postgres:5432/auth_service")
 	dbPool, err := db.New(dbURI, 10, 5, 10*time.Second, 30*time.Second)
@@ -36,7 +46,8 @@ func main() {
 
 	// Init Dependencies
 	repo := repository.NewPostgresRepository(dbPool)
-	svc := service.NewAuthService(repo)
+	publisher := events.NewUserActivationPublisher(mqClient)
+	svc := service.NewAuthService(repo, publisher)
 
 	// Init gRPC Server
 	server := grpcserver.NewServer()
