@@ -30,10 +30,6 @@ type authRequest struct {
 	Password string `json:"password" binding:"required,min=6"`
 }
 
-type activateRequest struct {
-	Token string `json:"token" binding:"required"`
-}
-
 func NewGatewayServer(eventClient *grpc_clients.EventServiceClient, bookingClient *grpc_clients.BookingServiceClient, paymentClient *grpc_clients.PaymentServiceClient, authClient *grpc_clients.AuthServiceClient) *GatewayServer {
 	return &GatewayServer{
 		eventClient:   eventClient,
