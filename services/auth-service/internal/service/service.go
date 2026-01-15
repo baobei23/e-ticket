@@ -63,6 +63,9 @@ func (s *AuthService) Activate(ctx context.Context, token string) error {
 
 func (s *AuthService) Login(ctx context.Context, email, password string) (string, int64, error) {
 	user, err := s.repo.GetByEmail(ctx, email)
+	if err != nil {
+		return "", 0, domain.ErrUserNotFound
+	}
 
 	// Compare Password
 	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(password)); err != nil {
