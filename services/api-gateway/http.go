@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/baobei23/e-ticket/services/api-gateway/grpc_clients"
+	"github.com/baobei23/e-ticket/shared/proto/auth"
 	bookingpb "github.com/baobei23/e-ticket/shared/proto/booking"
 	eventpb "github.com/baobei23/e-ticket/shared/proto/event"
 	paymentpb "github.com/baobei23/e-ticket/shared/proto/payment"
@@ -16,19 +17,29 @@ type GatewayServer struct {
 	eventClient   *grpc_clients.EventServiceClient
 	bookingClient *grpc_clients.BookingServiceClient
 	paymentClient *grpc_clients.PaymentServiceClient
+	authClient    *grpc_clients.AuthServiceClient
 }
 
 type createBookingRequest struct {
 	EventID  int64 `json:"event_id" binding:"required"`
 	Quantity int32 `json:"quantity" binding:"required,min=1"`
-	UserID   int64 `json:"user_id" binding:"required"` // Nanti diambil dari Token/Context Auth
 }
 
-func NewGatewayServer(eventClient *grpc_clients.EventServiceClient, bookingClient *grpc_clients.BookingServiceClient, paymentClient *grpc_clients.PaymentServiceClient) *GatewayServer {
+type authRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6"`
+}
+
+type activateRequest struct {
+	Token string `json:"token" binding:"required"`
+}
+
+func NewGatewayServer(eventClient *grpc_clients.EventServiceClient, bookingClient *grpc_clients.BookingServiceClient, paymentClient *grpc_clients.PaymentServiceClient, authClient *grpc_clients.AuthServiceClient) *GatewayServer {
 	return &GatewayServer{
 		eventClient:   eventClient,
 		bookingClient: bookingClient,
 		paymentClient: paymentClient,
+		authClient:    authClient,
 	}
 }
 
@@ -130,23 +141,27 @@ func (s *GatewayServer) checkAvailabilityHandler(c *gin.Context) {
 }
 
 func (s *GatewayServer) CreateBookingHandler(c *gin.Context) {
-	var req createBookingRequest
+	var req createBookingRequest // Pastikan struct ini tidak lagi mewajibkan field user_id dari JSON
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx := c.Request.Context()
+	// AMBIL UserID DARI CONTEXT (Diset oleh Middleware)
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
 
-	// Panggil Booking Service via gRPC
-	resp, err := s.bookingClient.Client.CreateBooking(ctx, &bookingpb.CreateBookingRequest{
-		UserId:   req.UserID,
+	// Panggil Booking Service
+	resp, err := s.bookingClient.Client.CreateBooking(c.Request.Context(), &bookingpb.CreateBookingRequest{
+		UserId:   userID.(int64), // Type assertion
 		EventId:  req.EventID,
 		Quantity: req.Quantity,
 	})
 
 	if err != nil {
-		// Bisa tambah mapping error code gRPC ke HTTP di sini (misal Unavailable -> 400/409)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "Failed to create booking",
 			"details": err.Error(),
@@ -156,7 +171,6 @@ func (s *GatewayServer) CreateBookingHandler(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, resp)
 }
-
 func (s *GatewayServer) GetBookingDetailHandler(c *gin.Context) {
 	bookingID := c.Param("id")
 	if bookingID == "" {
@@ -218,4 +232,60 @@ func (s *GatewayServer) HandleStripeWebhook(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "received"})
+}
+
+func (s *GatewayServer) RegisterHandler(c *gin.Context) {
+	var req authRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resp, err := s.authClient.Client.Register(c.Request.Context(), &auth.RegisterRequest{
+		Email:    req.Email,
+		Password: req.Password,
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, resp)
+}
+
+func (s *GatewayServer) ActivateHandler(c *gin.Context) {
+	var req activateRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err := s.authClient.Client.Activate(c.Request.Context(), &auth.ActivateRequest{
+		Token: req.Token,
+	})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "activated"})
+}
+
+func (s *GatewayServer) LoginHandler(c *gin.Context) {
+	var req authRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resp, err := s.authClient.Client.Login(c.Request.Context(), &auth.LoginRequest{
+		Email:    req.Email,
+		Password: req.Password,
+	})
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	c.JSON(http.StatusOK, resp)
 }

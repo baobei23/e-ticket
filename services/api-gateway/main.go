@@ -24,7 +24,7 @@ func main() {
 	}
 	defer registry.Close()
 
-	grpc := NewGatewayServer(registry.Event, registry.Booking, registry.Payment)
+	grpc := NewGatewayServer(registry.Event, registry.Booking, registry.Payment, registry.Auth)
 
 	r := gin.Default()
 
@@ -33,8 +33,16 @@ func main() {
 	r.GET("/events/:id", grpc.getEventDetailHandler)
 	r.GET("/events/:id/check", grpc.checkAvailabilityHandler)
 
-	r.POST("/booking", grpc.CreateBookingHandler)
-	r.GET("/booking/:id", grpc.GetBookingDetailHandler)
+	r.POST("/auth/register", grpc.RegisterHandler)
+	r.POST("/auth/activate", grpc.ActivateHandler)
+	r.POST("/auth/login", grpc.LoginHandler)
+
+	protected := r.Group("/")
+	protected.Use(AuthMiddleware(registry.Auth))
+	{
+		protected.POST("/bookings", grpc.CreateBookingHandler)
+		protected.GET("/booking/:id", grpc.GetBookingDetailHandler)
+	}
 
 	r.POST("/stripe/webhook", grpc.HandleStripeWebhook)
 

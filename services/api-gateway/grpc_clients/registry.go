@@ -4,6 +4,7 @@ type ServiceRegistry struct {
 	Event   *EventServiceClient
 	Booking *BookingServiceClient
 	Payment *PaymentServiceClient
+	Auth    *AuthServiceClient
 	// add other clients here
 }
 
@@ -23,12 +24,18 @@ func NewServiceRegistry() (*ServiceRegistry, error) {
 		return nil, err
 	}
 
+	authClient, err := NewAuthServiceClient()
+	if err != nil {
+		return nil, err
+	}
+
 	// add other clients here
 
 	return &ServiceRegistry{
 		Event:   eventClient,
 		Booking: bookingClient,
 		Payment: paymentClient,
+		Auth:    authClient,
 		// add other clients here
 	}, nil
 }
@@ -43,6 +50,9 @@ func (r *ServiceRegistry) Close() {
 	}
 	if r.Payment != nil {
 		r.Payment.Close()
+	}
+	if r.Auth != nil {
+		r.Auth.Close()
 	}
 	// close other clients here
 }
