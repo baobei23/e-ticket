@@ -24,7 +24,7 @@ type User struct {
 }
 
 type UserRepository interface {
-	Create(ctx context.Context, user *User, token string, expiry time.Duration) error
+	Create(ctx context.Context, user *User, token string, expiry time.Duration) (time.Time, error)
 	GetByEmail(ctx context.Context, email string) (*User, error)
 	ActivateByToken(ctx context.Context, token string) error
 }

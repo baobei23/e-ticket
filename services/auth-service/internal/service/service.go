@@ -44,13 +44,12 @@ func (s *AuthService) Register(ctx context.Context, email, password string) (int
 	}
 
 	plainToken := uuid.New().String()
-	if err := s.repo.Create(ctx, user, plainToken, 30*time.Minute); err != nil {
+	expiry, err := s.repo.Create(ctx, user, plainToken, 30*time.Minute)
+	if err != nil {
 		return 0, "", err
 	}
 
-	expiresAt := time.Now().Add(30 * time.Minute)
-
-	if err := s.publisher.Publish(ctx, user.ID, user.Email, plainToken, expiresAt); err != nil {
+	if err := s.publisher.Publish(ctx, user.ID, user.Email, plainToken, expiry); err != nil {
 		return 0, "", err
 	}
 

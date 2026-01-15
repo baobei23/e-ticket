@@ -21,8 +21,10 @@ func NewPostgresRepository(db *pgxpool.Pool) domain.UserRepository {
 	return &PostgresRepository{db: db}
 }
 
-func (r *PostgresRepository) Create(ctx context.Context, user *domain.User, token string, expiry time.Duration) error {
-	return withTx(ctx, r.db, func(tx pgx.Tx) error {
+func (r *PostgresRepository) Create(ctx context.Context, user *domain.User, token string, expiry time.Duration) (time.Time, error) {
+	expiresAt := time.Now().Add(expiry)
+
+	err := withTx(ctx, r.db, func(tx pgx.Tx) error {
 		insertUser := `INSERT INTO users (email, password, is_active, created_at) VALUES ($1, $2, $3, $4) RETURNING id`
 
 		ctx, cancel := context.WithTimeout(ctx, domain.QueryTimeoutDuration)
@@ -37,11 +39,15 @@ func (r *PostgresRepository) Create(ctx context.Context, user *domain.User, toke
 		}
 
 		insertToken := `INSERT INTO user_activation_tokens (token, user_id, expiry) VALUES ($1, $2, $3)`
-		_, err := tx.Exec(ctx, insertToken, hashToken(token), user.ID, time.Now().Add(expiry))
+		_, err := tx.Exec(ctx, insertToken, hashToken(token), user.ID, expiresAt)
 		return err
 	})
-}
 
+	if err != nil {
+		return time.Time{}, err
+	}
+	return expiresAt, nil
+}
 func (r *PostgresRepository) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
 	query := `SELECT id, email, password, is_active, created_at FROM users WHERE email = $1 AND is_active = true`
 
