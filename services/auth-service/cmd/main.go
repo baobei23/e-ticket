@@ -68,4 +68,5 @@ func main() {
 	<-stop
 	log.Println("Shutting down Auth Service...")
 	server.GracefulStop()
+	log.Println("Auth Service exited properly")
 }
