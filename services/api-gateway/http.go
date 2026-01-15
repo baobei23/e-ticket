@@ -254,14 +254,10 @@ func (s *GatewayServer) RegisterHandler(c *gin.Context) {
 }
 
 func (s *GatewayServer) ActivateHandler(c *gin.Context) {
-	var req activateRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	token := c.Param("token")
 
 	_, err := s.authClient.Client.Activate(c.Request.Context(), &auth.ActivateRequest{
-		Token: req.Token,
+		Token: token,
 	})
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

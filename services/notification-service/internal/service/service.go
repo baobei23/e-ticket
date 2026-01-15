@@ -33,7 +33,7 @@ func NewNotificationService(mailer domain.Mailer, activationBaseURL string, maxR
 }
 
 func (s *NotificationService) SendActivationEmail(email, token string, expiresAt time.Time) error {
-	activationURL := fmt.Sprintf("%s?token=%s", s.activationBaseURL, token)
+	activationURL := fmt.Sprintf("%s/%s", s.activationBaseURL, token)
 
 	data := struct {
 		Email         string

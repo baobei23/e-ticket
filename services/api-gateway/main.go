@@ -34,7 +34,7 @@ func main() {
 	r.GET("/events/:id/check", grpc.checkAvailabilityHandler)
 
 	r.POST("/auth/register", grpc.RegisterHandler)
-	r.POST("/auth/activate", grpc.ActivateHandler)
+	r.PUT("/auth/activate/:token", grpc.ActivateHandler)
 	r.POST("/auth/login", grpc.LoginHandler)
 
 	protected := r.Group("/")
