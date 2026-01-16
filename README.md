@@ -190,8 +190,8 @@ create a pull request. You can also simply open an issue with the tag
 
 ### Top contributors:
 
-<a href="https://github.com/github_username/repo_name/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=github_username/repo_name" alt="contrib.rocks image" />
+<a href="https://github.com/baobei23/e-ticket/graphs/contributors">
+  <img src="https://github.com/baobei23/e-ticket/graphs/contributors" alt="contrib.rocks image" />
 </a>
 
 <!-- LICENSE -->
@@ -206,8 +206,7 @@ No license has been specified yet. Add a `LICENSE` file to define usage terms.
 
 ## Contact
 
-Project Link:
-[https://github.com/baobei23/e-ticket](https://github.com/baobei23/e-ticket)
+[![Go][linkedin-badge]][linkedin-url]
 
 For questions or issues, please open a GitHub issue.
 
@@ -257,3 +256,6 @@ For questions or issues, please open a GitHub issue.
 [tilt-badge]:
   https://img.shields.io/badge/Tilt-00C8A8?style=for-the-badge&logo=tilt&logoColor=white
 [tilt-url]: https://tilt.dev/
+[linkedin-badge]:
+  https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white
+[linkedin-url]: https://linkedin.com/in/ahmadreginald
