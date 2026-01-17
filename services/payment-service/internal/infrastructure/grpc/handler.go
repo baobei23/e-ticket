@@ -20,7 +20,7 @@ func NewPaymentHandler(server *grpc.Server, svc domain.PaymentService) *PaymentH
 }
 
 func (h *PaymentHandler) CreatePayment(ctx context.Context, req *paymentpb.CreatePaymentRequest) (*paymentpb.CreatePaymentResponse, error) {
-	payment, err := h.svc.CreatePayment(ctx, req.BookingId, req.UserId, req.Amount)
+	payment, err := h.svc.CreatePayment(ctx, req.BookingId, req.UserId, req.Amount, req.UnitPrice, req.Quantity)
 	if err != nil {
 		return nil, err
 	}

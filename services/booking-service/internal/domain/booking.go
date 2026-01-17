@@ -64,5 +64,5 @@ type BookingPublisher interface {
 }
 
 type PaymentProvider interface {
-	CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64) (string, error) // Returns paymentURL
+	CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64, unitPrice float64, quantity int32) (string, error) // Returns paymentURL
 }

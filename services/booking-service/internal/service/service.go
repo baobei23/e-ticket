@@ -60,7 +60,7 @@ func (s *BookingService) CreateBooking(ctx context.Context, userID int64, eventI
 		// TODO: outbox pattern
 	}
 
-	paymentURL, err := s.paymentProvider.CreatePayment(ctx, bookingID, userID, totalAmount)
+	paymentURL, err := s.paymentProvider.CreatePayment(ctx, bookingID, userID, totalAmount, unitPrice, quantity)
 	if err != nil {
 		// Log error, but booking is created
 		// User should be able to retry payment later (Endpoint GetBookingDetail should return paymentURL also if not paid),

@@ -15,6 +15,8 @@ type Payment struct {
 	BookingID  string
 	UserID     int64
 	Amount     float64
+	UnitPrice  float64
+	Quantity   int32
 	Currency   string
 	Status     PaymentStatus
 	StripeID   string
@@ -33,7 +35,7 @@ type PaymentRepository interface {
 }
 
 type PaymentService interface {
-	CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64) (*Payment, error)
+	CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64, unitPrice float64, quantity int32) (*Payment, error)
 	HandleWebhook(ctx context.Context, payload []byte, sigHeader string) error
 }
 

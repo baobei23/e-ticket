@@ -31,10 +31,13 @@ func NewPaymentService(
 	}
 }
 
-func (s *PaymentService) CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64) (*domain.Payment, error) {
+func (s *PaymentService) CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64, unitPrice float64, quantity int32) (*domain.Payment, error) {
 
 	if amount <= 0 {
 		return nil, errors.New("invalid amount")
+	}
+	if unitPrice <= 0 || quantity <= 0 {
+		return nil, errors.New("invalid unit price or quantity")
 	}
 
 	paymentID := uuid.New().String()
@@ -43,6 +46,8 @@ func (s *PaymentService) CreatePayment(ctx context.Context, bookingID string, us
 		BookingID: bookingID,
 		UserID:    userID,
 		Amount:    amount,
+		UnitPrice: unitPrice,
+		Quantity:  quantity,
 		Currency:  "idr",
 		Status:    domain.PaymentStatusPending,
 	}

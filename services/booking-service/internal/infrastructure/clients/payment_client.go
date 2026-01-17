@@ -31,11 +31,13 @@ func NewPaymentGRPCClient() (domain.PaymentProvider, error) {
 	}, nil
 }
 
-func (c *PaymentGRPCClient) CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64) (string, error) {
+func (c *PaymentGRPCClient) CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64, unitPrice float64, quantity int32) (string, error) {
 	resp, err := c.client.CreatePayment(ctx, &paymentpb.CreatePaymentRequest{
 		BookingId: bookingID,
 		UserId:    userID,
 		Amount:    amount,
+		UnitPrice: unitPrice,
+		Quantity:  quantity,
 		Currency:  "idr",
 	})
 	if err != nil {

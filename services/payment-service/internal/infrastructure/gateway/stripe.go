@@ -34,9 +34,9 @@ func (s *StripeGateway) CreateSession(ctx context.Context, payment *domain.Payme
 					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
 						Name: stripe.String(fmt.Sprintf("Booking #%s", payment.BookingID)),
 					},
-					UnitAmount: stripe.Int64(int64(payment.Amount * 100)),
+					UnitAmount: stripe.Int64(int64(payment.UnitPrice * 100)),
 				},
-				Quantity: stripe.Int64(1),
+				Quantity: stripe.Int64(int64(payment.Quantity)),
 			},
 		},
 		Mode:       stripe.String(string(stripe.CheckoutSessionModePayment)),
