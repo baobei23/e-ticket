@@ -82,11 +82,10 @@ func (x *RegisterRequest) GetFullName() string {
 }
 
 type RegisterResponse struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	UserId          int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	ActivationToken string                 `protobuf:"bytes,2,opt,name=activation_token,json=activationToken,proto3" json:"activation_token,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *RegisterResponse) Reset() {
@@ -124,13 +123,6 @@ func (x *RegisterResponse) GetUserId() int64 {
 		return x.UserId
 	}
 	return 0
-}
-
-func (x *RegisterResponse) GetActivationToken() string {
-	if x != nil {
-		return x.ActivationToken
-	}
-	return ""
 }
 
 type LoginRequest struct {
@@ -509,10 +501,9 @@ const file_proto_auth_proto_rawDesc = "" +
 	"\x0fRegisterRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1b\n" +
-	"\tfull_name\x18\x03 \x01(\tR\bfullName\"V\n" +
+	"\tfull_name\x18\x03 \x01(\tR\bfullName\"+\n" +
 	"\x10RegisterResponse\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12)\n" +
-	"\x10activation_token\x18\x02 \x01(\tR\x0factivationToken\"@\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\"@\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"Q\n" +

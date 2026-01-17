@@ -41,11 +41,13 @@ func (h *AuthHandler) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 }
 
 func (h *AuthHandler) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	userID, token, err := h.svc.Register(ctx, req.Email, req.Password)
+	userID, _, err := h.svc.Register(ctx, req.Email, req.Password)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.RegisterResponse{UserId: userID, ActivationToken: token}, nil
+	return &pb.RegisterResponse{
+		UserId: userID,
+	}, nil
 }
 
 func (h *AuthHandler) Activate(ctx context.Context, req *pb.ActivateRequest) (*pb.ActivateResponse, error) {

@@ -20,7 +20,6 @@ message RegisterRequest {
 
 message RegisterResponse {
     int64 user_id = 1;
-    string activation_token = 2;
 }
 
 message LoginRequest {
