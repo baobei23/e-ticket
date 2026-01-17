@@ -173,16 +173,15 @@ func (s *GatewayServer) CreateBookingHandler(c *gin.Context) {
 }
 func (s *GatewayServer) GetBookingDetailHandler(c *gin.Context) {
 	bookingID := c.Param("id")
-	if bookingID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Booking ID is required"})
+
+	userIDVal, ok := c.Get("user_id")
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-
-	// Simulasi ambil UserID dari context/token (karena belum ada auth middleware, kita ambil dari query param dulu)
-	userIDStr := c.Query("user_id")
-	userID, err := strconv.ParseInt(userIDStr, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing user_id"})
+	userID, ok := userIDVal.(int64)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user_id in context"})
 		return
 	}
 
