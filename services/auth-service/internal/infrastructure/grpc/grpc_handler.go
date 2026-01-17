@@ -55,6 +55,13 @@ func (h *AuthHandler) Activate(ctx context.Context, req *pb.ActivateRequest) (*p
 	return &pb.ActivateResponse{}, nil
 }
 
+func (h *AuthHandler) ResendActivation(ctx context.Context, req *pb.ResendActivationRequest) (*pb.ResendActivationResponse, error) {
+	if err := h.svc.ResendActivation(ctx, req.Email); err != nil {
+		return nil, err
+	}
+	return &pb.ResendActivationResponse{}, nil
+}
+
 func (h *AuthHandler) ValidateToken(ctx context.Context, req *pb.ValidateTokenRequest) (*pb.ValidateTokenResponse, error) {
 	userID, err := h.svc.ValidateToken(ctx, req.Token)
 	if err != nil {

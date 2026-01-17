@@ -65,6 +65,23 @@ func (r *PostgresRepository) GetByEmail(ctx context.Context, email string) (*dom
 	return &u, nil
 }
 
+func (r *PostgresRepository) GetByEmailAnyStatus(ctx context.Context, email string) (*domain.User, error) {
+	query := `SELECT id, email, password, is_active, created_at FROM users WHERE email = $1`
+
+	ctx, cancel := context.WithTimeout(ctx, domain.QueryTimeoutDuration)
+	defer cancel()
+
+	var u domain.User
+	err := r.db.QueryRow(ctx, query, email).Scan(&u.ID, &u.Email, &u.Password, &u.IsActive, &u.CreatedAt)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, domain.ErrUserNotFound
+		}
+		return nil, err
+	}
+	return &u, nil
+}
+
 func (r *PostgresRepository) ActivateByToken(ctx context.Context, token string) error {
 	return withTx(ctx, r.db, func(tx pgx.Tx) error {
 		selectUser := `SELECT user_id FROM user_activation_tokens WHERE token = $1 AND expiry > NOW()`
@@ -88,6 +105,27 @@ func (r *PostgresRepository) ActivateByToken(ctx context.Context, token string) 
 		_, err := tx.Exec(ctx, deleteTokens, userID)
 		return err
 	})
+}
+
+func (r *PostgresRepository) UpsertActivationToken(ctx context.Context, userID int64, token string, expiry time.Duration) (time.Time, error) {
+	expiresAt := time.Now().Add(expiry)
+
+	err := withTx(ctx, r.db, func(tx pgx.Tx) error {
+		ctx, cancel := context.WithTimeout(ctx, domain.QueryTimeoutDuration)
+		defer cancel()
+
+		if _, err := tx.Exec(ctx, `DELETE FROM user_activation_tokens WHERE user_id = $1`, userID); err != nil {
+			return err
+		}
+
+		insertToken := `INSERT INTO user_activation_tokens (token, user_id, expiry) VALUES ($1, $2, $3)`
+		_, err := tx.Exec(ctx, insertToken, hashToken(token), userID, expiresAt)
+		return err
+	})
+	if err != nil {
+		return time.Time{}, err
+	}
+	return expiresAt, nil
 }
 
 // helper functions

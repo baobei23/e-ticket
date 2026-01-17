@@ -9,6 +9,7 @@ service AuthService {
     rpc Login(LoginRequest) returns (LoginResponse);
     rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
     rpc Activate(ActivateRequest) returns (ActivateResponse);
+    rpc ResendActivation(ResendActivationRequest) returns (ResendActivationResponse);
 }
 
 message RegisterRequest {
@@ -47,3 +48,9 @@ message ActivateRequest {
 }
 
 message ActivateResponse {}
+
+message ResendActivationRequest {
+  string email = 1;
+}
+
+message ResendActivationResponse {}

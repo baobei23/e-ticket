@@ -35,6 +35,7 @@ func main() {
 
 	r.POST("/auth/register", grpc.RegisterHandler)
 	r.PUT("/auth/activate/:token", grpc.ActivateHandler)
+	r.POST("/auth/resend-activation", grpc.ResendActivationHandler)
 	r.POST("/auth/login", grpc.LoginHandler)
 
 	protected := r.Group("/")

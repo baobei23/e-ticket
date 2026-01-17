@@ -26,7 +26,9 @@ type User struct {
 type UserRepository interface {
 	Create(ctx context.Context, user *User, token string, expiry time.Duration) (time.Time, error)
 	GetByEmail(ctx context.Context, email string) (*User, error)
+	GetByEmailAnyStatus(ctx context.Context, email string) (*User, error)
 	ActivateByToken(ctx context.Context, token string) error
+	UpsertActivationToken(ctx context.Context, userID int64, token string, expiry time.Duration) (time.Time, error)
 }
 
 type AuthService interface {
@@ -34,6 +36,7 @@ type AuthService interface {
 	Login(ctx context.Context, email, password string) (string, int64, error)
 	ValidateToken(ctx context.Context, token string) (int64, error)
 	Activate(ctx context.Context, token string) error
+	ResendActivation(ctx context.Context, email string) error
 }
 
 type UserActivationPublisher interface {

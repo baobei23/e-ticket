@@ -8,6 +8,7 @@ package auth
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -19,10 +20,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_Register_FullMethodName      = "/auth.AuthService/Register"
-	AuthService_Login_FullMethodName         = "/auth.AuthService/Login"
-	AuthService_ValidateToken_FullMethodName = "/auth.AuthService/ValidateToken"
-	AuthService_Activate_FullMethodName      = "/auth.AuthService/Activate"
+	AuthService_Register_FullMethodName         = "/auth.AuthService/Register"
+	AuthService_Login_FullMethodName            = "/auth.AuthService/Login"
+	AuthService_ValidateToken_FullMethodName    = "/auth.AuthService/ValidateToken"
+	AuthService_Activate_FullMethodName         = "/auth.AuthService/Activate"
+	AuthService_ResendActivation_FullMethodName = "/auth.AuthService/ResendActivation"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -33,6 +35,7 @@ type AuthServiceClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	ValidateToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error)
 	Activate(ctx context.Context, in *ActivateRequest, opts ...grpc.CallOption) (*ActivateResponse, error)
+	ResendActivation(ctx context.Context, in *ResendActivationRequest, opts ...grpc.CallOption) (*ResendActivationResponse, error)
 }
 
 type authServiceClient struct {
@@ -83,6 +86,16 @@ func (c *authServiceClient) Activate(ctx context.Context, in *ActivateRequest, o
 	return out, nil
 }
 
+func (c *authServiceClient) ResendActivation(ctx context.Context, in *ResendActivationRequest, opts ...grpc.CallOption) (*ResendActivationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResendActivationResponse)
+	err := c.cc.Invoke(ctx, AuthService_ResendActivation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -91,6 +104,7 @@ type AuthServiceServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	ValidateToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error)
 	Activate(context.Context, *ActivateRequest) (*ActivateResponse, error)
+	ResendActivation(context.Context, *ResendActivationRequest) (*ResendActivationResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -112,6 +126,9 @@ func (UnimplementedAuthServiceServer) ValidateToken(context.Context, *ValidateTo
 }
 func (UnimplementedAuthServiceServer) Activate(context.Context, *ActivateRequest) (*ActivateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Activate not implemented")
+}
+func (UnimplementedAuthServiceServer) ResendActivation(context.Context, *ResendActivationRequest) (*ResendActivationResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ResendActivation not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -206,6 +223,24 @@ func _AuthService_Activate_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_ResendActivation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResendActivationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).ResendActivation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_ResendActivation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).ResendActivation(ctx, req.(*ResendActivationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -228,6 +263,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Activate",
 			Handler:    _AuthService_Activate_Handler,
+		},
+		{
+			MethodName: "ResendActivation",
+			Handler:    _AuthService_ResendActivation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

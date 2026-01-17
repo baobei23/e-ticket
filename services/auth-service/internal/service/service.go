@@ -18,6 +18,8 @@ type AuthService struct {
 	publisher   domain.UserActivationPublisher
 }
 
+const activationTokenTTL = 30 * time.Minute
+
 func NewAuthService(repo domain.UserRepository, publisher domain.UserActivationPublisher) *AuthService {
 	secret := os.Getenv("JWT_SECRET")
 	if secret == "" {
@@ -44,7 +46,7 @@ func (s *AuthService) Register(ctx context.Context, email, password string) (int
 	}
 
 	plainToken := uuid.New().String()
-	expiry, err := s.repo.Create(ctx, user, plainToken, 30*time.Minute)
+	expiry, err := s.repo.Create(ctx, user, plainToken, activationTokenTTL)
 	if err != nil {
 		return 0, "", err
 	}
@@ -58,6 +60,28 @@ func (s *AuthService) Register(ctx context.Context, email, password string) (int
 
 func (s *AuthService) Activate(ctx context.Context, token string) error {
 	return s.repo.ActivateByToken(ctx, token)
+}
+
+func (s *AuthService) ResendActivation(ctx context.Context, email string) error {
+	user, err := s.repo.GetByEmailAnyStatus(ctx, email)
+	if err != nil {
+		if err == domain.ErrUserNotFound {
+			return nil
+		}
+		return err
+	}
+
+	if user.IsActive {
+		return nil
+	}
+
+	plainToken := uuid.New().String()
+	expiry, err := s.repo.UpsertActivationToken(ctx, user.ID, plainToken, activationTokenTTL)
+	if err != nil {
+		return err
+	}
+
+	return s.publisher.Publish(ctx, user.ID, user.Email, plainToken, expiry)
 }
 
 func (s *AuthService) Login(ctx context.Context, email, password string) (string, int64, error) {

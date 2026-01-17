@@ -421,6 +421,86 @@ func (*ActivateResponse) Descriptor() ([]byte, []int) {
 	return file_proto_auth_proto_rawDescGZIP(), []int{7}
 }
 
+type ResendActivationRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResendActivationRequest) Reset() {
+	*x = ResendActivationRequest{}
+	mi := &file_proto_auth_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResendActivationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResendActivationRequest) ProtoMessage() {}
+
+func (x *ResendActivationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_auth_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResendActivationRequest.ProtoReflect.Descriptor instead.
+func (*ResendActivationRequest) Descriptor() ([]byte, []int) {
+	return file_proto_auth_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ResendActivationRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+type ResendActivationResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResendActivationResponse) Reset() {
+	*x = ResendActivationResponse{}
+	mi := &file_proto_auth_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResendActivationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResendActivationResponse) ProtoMessage() {}
+
+func (x *ResendActivationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_auth_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResendActivationResponse.ProtoReflect.Descriptor instead.
+func (*ResendActivationResponse) Descriptor() ([]byte, []int) {
+	return file_proto_auth_proto_rawDescGZIP(), []int{9}
+}
+
 var File_proto_auth_proto protoreflect.FileDescriptor
 
 const file_proto_auth_proto_rawDesc = "" +
@@ -448,12 +528,16 @@ const file_proto_auth_proto_rawDesc = "" +
 	"\x05email\x18\x03 \x01(\tR\x05email\"'\n" +
 	"\x0fActivateRequest\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\"\x12\n" +
-	"\x10ActivateResponse2\xff\x01\n" +
+	"\x10ActivateResponse\"/\n" +
+	"\x17ResendActivationRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\"\x1a\n" +
+	"\x18ResendActivationResponse2\xd2\x02\n" +
 	"\vAuthService\x129\n" +
 	"\bRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\x120\n" +
 	"\x05Login\x12\x12.auth.LoginRequest\x1a\x13.auth.LoginResponse\x12H\n" +
 	"\rValidateToken\x12\x1a.auth.ValidateTokenRequest\x1a\x1b.auth.ValidateTokenResponse\x129\n" +
-	"\bActivate\x12\x15.auth.ActivateRequest\x1a\x16.auth.ActivateResponseB\x13Z\x11shared/proto/authb\x06proto3"
+	"\bActivate\x12\x15.auth.ActivateRequest\x1a\x16.auth.ActivateResponse\x12Q\n" +
+	"\x10ResendActivation\x12\x1d.auth.ResendActivationRequest\x1a\x1e.auth.ResendActivationResponseB\x13Z\x11shared/proto/authb\x06proto3"
 
 var (
 	file_proto_auth_proto_rawDescOnce sync.Once
@@ -467,28 +551,32 @@ func file_proto_auth_proto_rawDescGZIP() []byte {
 	return file_proto_auth_proto_rawDescData
 }
 
-var file_proto_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_proto_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_proto_auth_proto_goTypes = []any{
-	(*RegisterRequest)(nil),       // 0: auth.RegisterRequest
-	(*RegisterResponse)(nil),      // 1: auth.RegisterResponse
-	(*LoginRequest)(nil),          // 2: auth.LoginRequest
-	(*LoginResponse)(nil),         // 3: auth.LoginResponse
-	(*ValidateTokenRequest)(nil),  // 4: auth.ValidateTokenRequest
-	(*ValidateTokenResponse)(nil), // 5: auth.ValidateTokenResponse
-	(*ActivateRequest)(nil),       // 6: auth.ActivateRequest
-	(*ActivateResponse)(nil),      // 7: auth.ActivateResponse
+	(*RegisterRequest)(nil),          // 0: auth.RegisterRequest
+	(*RegisterResponse)(nil),         // 1: auth.RegisterResponse
+	(*LoginRequest)(nil),             // 2: auth.LoginRequest
+	(*LoginResponse)(nil),            // 3: auth.LoginResponse
+	(*ValidateTokenRequest)(nil),     // 4: auth.ValidateTokenRequest
+	(*ValidateTokenResponse)(nil),    // 5: auth.ValidateTokenResponse
+	(*ActivateRequest)(nil),          // 6: auth.ActivateRequest
+	(*ActivateResponse)(nil),         // 7: auth.ActivateResponse
+	(*ResendActivationRequest)(nil),  // 8: auth.ResendActivationRequest
+	(*ResendActivationResponse)(nil), // 9: auth.ResendActivationResponse
 }
 var file_proto_auth_proto_depIdxs = []int32{
 	0, // 0: auth.AuthService.Register:input_type -> auth.RegisterRequest
 	2, // 1: auth.AuthService.Login:input_type -> auth.LoginRequest
 	4, // 2: auth.AuthService.ValidateToken:input_type -> auth.ValidateTokenRequest
 	6, // 3: auth.AuthService.Activate:input_type -> auth.ActivateRequest
-	1, // 4: auth.AuthService.Register:output_type -> auth.RegisterResponse
-	3, // 5: auth.AuthService.Login:output_type -> auth.LoginResponse
-	5, // 6: auth.AuthService.ValidateToken:output_type -> auth.ValidateTokenResponse
-	7, // 7: auth.AuthService.Activate:output_type -> auth.ActivateResponse
-	4, // [4:8] is the sub-list for method output_type
-	0, // [0:4] is the sub-list for method input_type
+	8, // 4: auth.AuthService.ResendActivation:input_type -> auth.ResendActivationRequest
+	1, // 5: auth.AuthService.Register:output_type -> auth.RegisterResponse
+	3, // 6: auth.AuthService.Login:output_type -> auth.LoginResponse
+	5, // 7: auth.AuthService.ValidateToken:output_type -> auth.ValidateTokenResponse
+	7, // 8: auth.AuthService.Activate:output_type -> auth.ActivateResponse
+	9, // 9: auth.AuthService.ResendActivation:output_type -> auth.ResendActivationResponse
+	5, // [5:10] is the sub-list for method output_type
+	0, // [0:5] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -505,7 +593,7 @@ func file_proto_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_auth_proto_rawDesc), len(file_proto_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

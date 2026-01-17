@@ -30,6 +30,10 @@ type authRequest struct {
 	Password string `json:"password" binding:"required,min=6"`
 }
 
+type resendActivationRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
 func NewGatewayServer(eventClient *grpc_clients.EventServiceClient, bookingClient *grpc_clients.BookingServiceClient, paymentClient *grpc_clients.PaymentServiceClient, authClient *grpc_clients.AuthServiceClient) *GatewayServer {
 	return &GatewayServer{
 		eventClient:   eventClient,
@@ -261,6 +265,24 @@ func (s *GatewayServer) ActivateHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "activated"})
+}
+
+func (s *GatewayServer) ResendActivationHandler(c *gin.Context) {
+	var req resendActivationRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err := s.authClient.Client.ResendActivation(c.Request.Context(), &auth.ResendActivationRequest{
+		Email: req.Email,
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
 func (s *GatewayServer) LoginHandler(c *gin.Context) {
