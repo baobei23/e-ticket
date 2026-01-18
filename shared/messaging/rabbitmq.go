@@ -131,8 +131,9 @@ func (c *RabbitMQClient) Publish(ctx context.Context, eventName string, payload 
 		false,
 		false,
 		amqp.Publishing{
-			ContentType: "application/json",
-			Body:        body,
+			DeliveryMode: amqp.Persistent,
+			ContentType:  "application/json",
+			Body:         body,
 		},
 	)
 }
