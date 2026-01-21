@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -16,12 +17,28 @@ import (
 	"github.com/baobei23/e-ticket/shared/db"
 	"github.com/baobei23/e-ticket/shared/env"
 	"github.com/baobei23/e-ticket/shared/messaging"
+	"github.com/baobei23/e-ticket/shared/tracing"
 
 	grpcserver "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
 func main() {
+
+	tracerCfg := tracing.Config{
+		ServiceName:    "auth-service",
+		Environment:    env.GetString("ENVIRONMENT", "development"),
+		JaegerEndpoint: env.GetString("JAEGER_ENDPOINT", "http://jaeger:14268/api/traces"),
+	}
+	sh, err := tracing.InitTracer(tracerCfg)
+	if err != nil {
+		log.Fatalf("Failed to initialize the tracer: %v", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	defer sh(ctx)
+
 	// Init Listener
 	lis, err := net.Listen("tcp", ":50054") // Port 50054
 	if err != nil {
@@ -50,7 +67,7 @@ func main() {
 	svc := service.NewAuthService(repo, publisher)
 
 	// Init gRPC Server
-	server := grpcserver.NewServer()
+	server := grpcserver.NewServer(tracing.WithTracingInterceptors()...)
 	grpc.NewAuthHandler(server, svc)
 	reflection.Register(server)
 

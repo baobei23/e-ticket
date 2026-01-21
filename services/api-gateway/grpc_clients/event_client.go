@@ -3,6 +3,7 @@ package grpc_clients
 import (
 	"github.com/baobei23/e-ticket/shared/env"
 	eventpb "github.com/baobei23/e-ticket/shared/proto/event"
+	"github.com/baobei23/e-ticket/shared/tracing"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -13,9 +14,14 @@ type EventServiceClient struct {
 }
 
 func NewEventServiceClient() (*EventServiceClient, error) {
-	eventServiceAddress := env.GetString("EVENT_SERVICE_ADDRESS", "event-service:50051")
+	addr := env.GetString("EVENT_SERVICE_ADDRESS", "event-service:50051")
 
-	conn, err := grpc.NewClient(eventServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	dialOptions := append(
+		tracing.DialOptionsWithTracing(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+
+	conn, err := grpc.NewClient(addr, dialOptions...)
 	if err != nil {
 		return nil, err
 	}

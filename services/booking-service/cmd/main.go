@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -17,11 +18,26 @@ import (
 	"github.com/baobei23/e-ticket/shared/db"
 	"github.com/baobei23/e-ticket/shared/env"
 	"github.com/baobei23/e-ticket/shared/messaging"
+	"github.com/baobei23/e-ticket/shared/tracing"
 
 	grpcserver "google.golang.org/grpc"
 )
 
 func main() {
+	tracerCfg := tracing.Config{
+		ServiceName:    "booking-service",
+		Environment:    env.GetString("ENVIRONMENT", "development"),
+		JaegerEndpoint: env.GetString("JAEGER_ENDPOINT", "http://jaeger:14268/api/traces"),
+	}
+	sh, err := tracing.InitTracer(tracerCfg)
+	if err != nil {
+		log.Fatalf("Failed to initialize the tracer: %v", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	defer sh(ctx)
+
 	// 1. Init Listener
 	lis, err := net.Listen("tcp", ":50052")
 	if err != nil {
@@ -65,7 +81,7 @@ func main() {
 	paymentConsumer.Start()
 
 	// Init gRPC Server
-	grpcServer := grpcserver.NewServer()
+	grpcServer := grpcserver.NewServer(tracing.WithTracingInterceptors()...)
 
 	// Register Handler (Self-registering pattern)
 	grpc.NewBookingHandler(grpcServer, svc)

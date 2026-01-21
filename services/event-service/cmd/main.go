@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -16,10 +17,25 @@ import (
 	"github.com/baobei23/e-ticket/shared/db"
 	"github.com/baobei23/e-ticket/shared/env"
 	"github.com/baobei23/e-ticket/shared/messaging"
+	"github.com/baobei23/e-ticket/shared/tracing"
 	grpcserver "google.golang.org/grpc"
 )
 
 func main() {
+
+	tracerCfg := tracing.Config{
+		ServiceName:    "event-service",
+		Environment:    env.GetString("ENVIRONMENT", "development"),
+		JaegerEndpoint: env.GetString("JAEGER_ENDPOINT", "http://jaeger:14268/api/traces"),
+	}
+	sh, err := tracing.InitTracer(tracerCfg)
+	if err != nil {
+		log.Fatalf("Failed to initialize the tracer: %v", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	defer sh(ctx)
 
 	// Init RabbitMQ
 	amqpURL := env.GetString("RABBITMQ_URI", "amqp://admin:admin@rabbitmq:5672/")
@@ -52,7 +68,7 @@ func main() {
 	consumer.Start()
 
 	// Init gRPC Server
-	grpcServer := grpcserver.NewServer()
+	grpcServer := grpcserver.NewServer(tracing.WithTracingInterceptors()...)
 	grpc.NewEventHandler(grpcServer, service)
 
 	stop := make(chan os.Signal, 1)
