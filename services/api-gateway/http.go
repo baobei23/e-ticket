@@ -85,10 +85,10 @@ func (s *GatewayServer) getEventsHandler(c *gin.Context) {
 }
 
 func (s *GatewayServer) getEventDetailHandler(c *gin.Context) {
+	ctx, span := tracer.Start(c.Request.Context(), "getEventDetailHandler")
+	defer span.End()
 	eventIdStr := c.Param("id")
 	eventId, _ := strconv.ParseInt(eventIdStr, 10, 64)
-
-	ctx := c.Request.Context()
 
 	resp, err := s.eventClient.Client.GetEventDetail(ctx, &eventpb.GetEventDetailRequest{
 		EventId: eventId,
@@ -107,6 +107,9 @@ func (s *GatewayServer) getEventDetailHandler(c *gin.Context) {
 
 func (s *GatewayServer) checkAvailabilityHandler(c *gin.Context) {
 
+	ctx, span := tracer.Start(c.Request.Context(), "checkAvailabilityHandler")
+	defer span.End()
+
 	eventIdStr := c.Param("id")
 	quantityStr := c.Query("quantity")
 
@@ -121,8 +124,6 @@ func (s *GatewayServer) checkAvailabilityHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing quantity"})
 		return
 	}
-
-	ctx := c.Request.Context()
 
 	resp, err := s.eventClient.Client.CheckAvailability(ctx, &eventpb.CheckAvailabilityRequest{
 		EventId:  eventId,
@@ -144,6 +145,8 @@ func (s *GatewayServer) checkAvailabilityHandler(c *gin.Context) {
 }
 
 func (s *GatewayServer) CreateBookingHandler(c *gin.Context) {
+	ctx, span := tracer.Start(c.Request.Context(), "CreateBookingHandler")
+	defer span.End()
 	var req createBookingRequest // Pastikan struct ini tidak lagi mewajibkan field user_id dari JSON
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -158,7 +161,7 @@ func (s *GatewayServer) CreateBookingHandler(c *gin.Context) {
 	}
 
 	// Panggil Booking Service
-	resp, err := s.bookingClient.Client.CreateBooking(c.Request.Context(), &bookingpb.CreateBookingRequest{
+	resp, err := s.bookingClient.Client.CreateBooking(ctx, &bookingpb.CreateBookingRequest{
 		UserId:   userID.(int64), // Type assertion
 		EventId:  req.EventID,
 		Quantity: req.Quantity,
@@ -175,6 +178,8 @@ func (s *GatewayServer) CreateBookingHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, resp)
 }
 func (s *GatewayServer) GetBookingDetailHandler(c *gin.Context) {
+	ctx, span := tracer.Start(c.Request.Context(), "GetBookingDetailHandler")
+	defer span.End()
 	bookingID := c.Param("id")
 
 	userIDVal, ok := c.Get("user_id")
@@ -187,8 +192,6 @@ func (s *GatewayServer) GetBookingDetailHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user_id in context"})
 		return
 	}
-
-	ctx := c.Request.Context()
 
 	resp, err := s.bookingClient.Client.GetBookingDetail(ctx, &bookingpb.GetBookingDetailRequest{
 		BookingId: bookingID,
@@ -208,6 +211,8 @@ func (s *GatewayServer) GetBookingDetailHandler(c *gin.Context) {
 }
 
 func (s *GatewayServer) HandleStripeWebhook(c *gin.Context) {
+	ctx, span := tracer.Start(c.Request.Context(), "HandleStripeWebhook")
+	defer span.End()
 	// 1. Baca Raw Body
 	// Penting: Stripe butuh raw bytes untuk verifikasi signature.
 	// Gin secara default membaca body stream, jadi kita harus baca manual.
@@ -221,7 +226,7 @@ func (s *GatewayServer) HandleStripeWebhook(c *gin.Context) {
 
 	// 2. Kirim ke Payment Service via gRPC
 	// Asumsi: client sudah ada method HandleWebhook (hasil generate proto baru)
-	_, err = s.paymentClient.Client.HandleWebhook(c.Request.Context(), &paymentpb.HandleWebhookRequest{
+	_, err = s.paymentClient.Client.HandleWebhook(ctx, &paymentpb.HandleWebhookRequest{
 		Payload:   payload,
 		Signature: sigHeader,
 	})
@@ -237,13 +242,15 @@ func (s *GatewayServer) HandleStripeWebhook(c *gin.Context) {
 }
 
 func (s *GatewayServer) RegisterHandler(c *gin.Context) {
+	ctx, span := tracer.Start(c.Request.Context(), "RegisterHandler")
+	defer span.End()
 	var req authRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	resp, err := s.authClient.Client.Register(c.Request.Context(), &auth.RegisterRequest{
+	resp, err := s.authClient.Client.Register(ctx, &auth.RegisterRequest{
 		Email:    req.Email,
 		Password: req.Password,
 	})
@@ -256,9 +263,11 @@ func (s *GatewayServer) RegisterHandler(c *gin.Context) {
 }
 
 func (s *GatewayServer) ActivateHandler(c *gin.Context) {
+	ctx, span := tracer.Start(c.Request.Context(), "ActivateHandler")
+	defer span.End()
 	token := c.Param("token")
 
-	_, err := s.authClient.Client.Activate(c.Request.Context(), &auth.ActivateRequest{
+	_, err := s.authClient.Client.Activate(ctx, &auth.ActivateRequest{
 		Token: token,
 	})
 	if err != nil {
@@ -270,13 +279,15 @@ func (s *GatewayServer) ActivateHandler(c *gin.Context) {
 }
 
 func (s *GatewayServer) ResendActivationHandler(c *gin.Context) {
+	ctx, span := tracer.Start(c.Request.Context(), "ResendActivationHandler")
+	defer span.End()
 	var req resendActivationRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	_, err := s.authClient.Client.ResendActivation(c.Request.Context(), &auth.ResendActivationRequest{
+	_, err := s.authClient.Client.ResendActivation(ctx, &auth.ResendActivationRequest{
 		Email: req.Email,
 	})
 	if err != nil {
@@ -288,13 +299,15 @@ func (s *GatewayServer) ResendActivationHandler(c *gin.Context) {
 }
 
 func (s *GatewayServer) LoginHandler(c *gin.Context) {
+	ctx, span := tracer.Start(c.Request.Context(), "LoginHandler")
+	defer span.End()
 	var req authRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	resp, err := s.authClient.Client.Login(c.Request.Context(), &auth.LoginRequest{
+	resp, err := s.authClient.Client.Login(ctx, &auth.LoginRequest{
 		Email:    req.Email,
 		Password: req.Password,
 	})

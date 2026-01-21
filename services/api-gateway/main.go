@@ -11,6 +11,7 @@ import (
 
 	"github.com/baobei23/e-ticket/services/api-gateway/grpc_clients"
 	"github.com/baobei23/e-ticket/shared/env"
+	"github.com/baobei23/e-ticket/shared/tracing"
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
@@ -18,6 +19,20 @@ import (
 var httpAddr = env.GetString("GATEWAY_HTTP_ADDR", ":8080")
 
 func main() {
+
+	tracerCfg := tracing.Config{
+		ServiceName:    "api-gateway",
+		Environment:    "development",
+		JaegerEndpoint: "http://jaeger:14268/api/traces",
+	}
+	sh, err := tracing.InitTracer(tracerCfg)
+	if err != nil {
+		log.Fatalf("Failed to initialize the tracer: %v", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	defer sh(ctx)
 
 	registry, err := grpc_clients.NewServiceRegistry()
 	if err != nil {
