@@ -13,6 +13,7 @@ data:
   STRIPE_SUCCESS_URL: 'http://localhost:8080/success'
   STRIPE_CANCEL_URL: 'http://localhost:8080/cancel'
   ACTIVATION_URL_BASE: 'http://localhost:8080/auth/activate'
+  JAEGER_ENDPOINT: 'http://jaeger:14268/api/traces'
 ---
 apiVersion: v1
 kind: ConfigMap

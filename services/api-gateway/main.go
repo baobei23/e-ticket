@@ -22,8 +22,8 @@ func main() {
 
 	tracerCfg := tracing.Config{
 		ServiceName:    "api-gateway",
-		Environment:    "development",
-		JaegerEndpoint: "http://jaeger:14268/api/traces",
+		Environment:    env.GetString("ENVIRONMENT", "development"),
+		JaegerEndpoint: env.GetString("JAEGER_ENDPOINT", "http://jaeger:14268/api/traces"),
 	}
 	sh, err := tracing.InitTracer(tracerCfg)
 	if err != nil {
