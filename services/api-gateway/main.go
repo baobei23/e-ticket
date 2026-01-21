@@ -12,6 +12,7 @@ import (
 	"github.com/baobei23/e-ticket/services/api-gateway/grpc_clients"
 	"github.com/baobei23/e-ticket/shared/env"
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 var httpAddr = env.GetString("GATEWAY_HTTP_ADDR", ":8080")
@@ -27,6 +28,7 @@ func main() {
 	grpc := NewGatewayServer(registry.Event, registry.Booking, registry.Payment, registry.Auth)
 
 	r := gin.Default()
+	r.Use(otelgin.Middleware("api-gateway"))
 
 	r.GET("/health", healthCheckHandler)
 	r.GET("/events", grpc.getEventsHandler)

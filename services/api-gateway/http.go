@@ -10,8 +10,11 @@ import (
 	bookingpb "github.com/baobei23/e-ticket/shared/proto/booking"
 	eventpb "github.com/baobei23/e-ticket/shared/proto/event"
 	paymentpb "github.com/baobei23/e-ticket/shared/proto/payment"
+	"github.com/baobei23/e-ticket/shared/tracing"
 	"github.com/gin-gonic/gin"
 )
+
+var tracer = tracing.GetTracer("api-gateway")
 
 type GatewayServer struct {
 	eventClient   *grpc_clients.EventServiceClient
@@ -48,6 +51,8 @@ func healthCheckHandler(c *gin.Context) {
 }
 
 func (s *GatewayServer) getEventsHandler(c *gin.Context) {
+	ctx, span := tracer.Start(c.Request.Context(), "getEventsHandler")
+	defer span.End()
 
 	pageStr := c.DefaultQuery("page", "1")
 	limitStr := c.DefaultQuery("limit", "10")
@@ -60,8 +65,6 @@ func (s *GatewayServer) getEventsHandler(c *gin.Context) {
 	if limit < 1 {
 		limit = 10
 	}
-
-	ctx := c.Request.Context()
 
 	resp, err := s.eventClient.Client.GetEvents(ctx, &eventpb.GetEventsRequest{
 		Pagination: &eventpb.PaginationRequest{
