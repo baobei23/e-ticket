@@ -541,7 +541,7 @@ type ReserveSeatRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	EventId       int64                  `protobuf:"varint,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
 	Quantity      int32                  `protobuf:"varint,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	BookingId     int64                  `protobuf:"varint,3,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
+	BookingId     string                 `protobuf:"bytes,3,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -590,11 +590,11 @@ func (x *ReserveSeatRequest) GetQuantity() int32 {
 	return 0
 }
 
-func (x *ReserveSeatRequest) GetBookingId() int64 {
+func (x *ReserveSeatRequest) GetBookingId() string {
 	if x != nil {
 		return x.BookingId
 	}
-	return 0
+	return ""
 }
 
 type ReserveSeatResponse struct {
@@ -653,7 +653,7 @@ type ReleaseSeatRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	EventId       int64                  `protobuf:"varint,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
 	Quantity      int32                  `protobuf:"varint,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	BookingId     int64                  `protobuf:"varint,3,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
+	BookingId     string                 `protobuf:"bytes,3,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -702,11 +702,11 @@ func (x *ReleaseSeatRequest) GetQuantity() int32 {
 	return 0
 }
 
-func (x *ReleaseSeatRequest) GetBookingId() int64 {
+func (x *ReleaseSeatRequest) GetBookingId() string {
 	if x != nil {
 		return x.BookingId
 	}
-	return 0
+	return ""
 }
 
 type ReleaseSeatResponse struct {
@@ -811,7 +811,7 @@ const file_proto_event_proto_rawDesc = "" +
 	"\bevent_id\x18\x01 \x01(\x03R\aeventId\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x05R\bquantity\x12\x1d\n" +
 	"\n" +
-	"booking_id\x18\x03 \x01(\x03R\tbookingId\"K\n" +
+	"booking_id\x18\x03 \x01(\tR\tbookingId\"K\n" +
 	"\x13ReserveSeatResponse\x12\x1a\n" +
 	"\breserved\x18\x01 \x01(\bR\breserved\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\"j\n" +
@@ -819,7 +819,7 @@ const file_proto_event_proto_rawDesc = "" +
 	"\bevent_id\x18\x01 \x01(\x03R\aeventId\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x05R\bquantity\x12\x1d\n" +
 	"\n" +
-	"booking_id\x18\x03 \x01(\x03R\tbookingId\"K\n" +
+	"booking_id\x18\x03 \x01(\tR\tbookingId\"K\n" +
 	"\x13ReleaseSeatResponse\x12\x1a\n" +
 	"\breleased\x18\x01 \x01(\bR\breleased\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage2\x81\x03\n" +

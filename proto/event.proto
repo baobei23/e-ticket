@@ -70,7 +70,7 @@ message CheckAvailabilityResponse {
 message ReserveSeatRequest {
   int64 event_id = 1;
   int32 quantity = 2;
-  int64 booking_id = 3;
+  string booking_id = 3;
 }
 
 message ReserveSeatResponse {
@@ -81,7 +81,7 @@ message ReserveSeatResponse {
 message ReleaseSeatRequest {
   int64 event_id = 1;
   int32 quantity = 2;
-  int64 booking_id = 3;
+  string booking_id = 3;
 }
 
 message ReleaseSeatResponse {
