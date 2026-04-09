@@ -22,6 +22,8 @@ const (
 	EventService_GetEvents_FullMethodName         = "/event.EventService/GetEvents"
 	EventService_GetEventDetail_FullMethodName    = "/event.EventService/GetEventDetail"
 	EventService_CheckAvailability_FullMethodName = "/event.EventService/CheckAvailability"
+	EventService_ReserveSeat_FullMethodName       = "/event.EventService/ReserveSeat"
+	EventService_ReleaseSeat_FullMethodName       = "/event.EventService/ReleaseSeat"
 )
 
 // EventServiceClient is the client API for EventService service.
@@ -32,6 +34,8 @@ type EventServiceClient interface {
 	GetEventDetail(ctx context.Context, in *GetEventDetailRequest, opts ...grpc.CallOption) (*GetEventDetailResponse, error)
 	// Internal use / Booking service use
 	CheckAvailability(ctx context.Context, in *CheckAvailabilityRequest, opts ...grpc.CallOption) (*CheckAvailabilityResponse, error)
+	ReserveSeat(ctx context.Context, in *ReserveSeatRequest, opts ...grpc.CallOption) (*ReserveSeatResponse, error)
+	ReleaseSeat(ctx context.Context, in *ReleaseSeatRequest, opts ...grpc.CallOption) (*ReleaseSeatResponse, error)
 }
 
 type eventServiceClient struct {
@@ -72,6 +76,26 @@ func (c *eventServiceClient) CheckAvailability(ctx context.Context, in *CheckAva
 	return out, nil
 }
 
+func (c *eventServiceClient) ReserveSeat(ctx context.Context, in *ReserveSeatRequest, opts ...grpc.CallOption) (*ReserveSeatResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReserveSeatResponse)
+	err := c.cc.Invoke(ctx, EventService_ReserveSeat_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *eventServiceClient) ReleaseSeat(ctx context.Context, in *ReleaseSeatRequest, opts ...grpc.CallOption) (*ReleaseSeatResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReleaseSeatResponse)
+	err := c.cc.Invoke(ctx, EventService_ReleaseSeat_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EventServiceServer is the server API for EventService service.
 // All implementations must embed UnimplementedEventServiceServer
 // for forward compatibility.
@@ -80,6 +104,8 @@ type EventServiceServer interface {
 	GetEventDetail(context.Context, *GetEventDetailRequest) (*GetEventDetailResponse, error)
 	// Internal use / Booking service use
 	CheckAvailability(context.Context, *CheckAvailabilityRequest) (*CheckAvailabilityResponse, error)
+	ReserveSeat(context.Context, *ReserveSeatRequest) (*ReserveSeatResponse, error)
+	ReleaseSeat(context.Context, *ReleaseSeatRequest) (*ReleaseSeatResponse, error)
 	mustEmbedUnimplementedEventServiceServer()
 }
 
@@ -98,6 +124,12 @@ func (UnimplementedEventServiceServer) GetEventDetail(context.Context, *GetEvent
 }
 func (UnimplementedEventServiceServer) CheckAvailability(context.Context, *CheckAvailabilityRequest) (*CheckAvailabilityResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CheckAvailability not implemented")
+}
+func (UnimplementedEventServiceServer) ReserveSeat(context.Context, *ReserveSeatRequest) (*ReserveSeatResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ReserveSeat not implemented")
+}
+func (UnimplementedEventServiceServer) ReleaseSeat(context.Context, *ReleaseSeatRequest) (*ReleaseSeatResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ReleaseSeat not implemented")
 }
 func (UnimplementedEventServiceServer) mustEmbedUnimplementedEventServiceServer() {}
 func (UnimplementedEventServiceServer) testEmbeddedByValue()                      {}
@@ -174,6 +206,42 @@ func _EventService_CheckAvailability_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EventService_ReserveSeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReserveSeatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventServiceServer).ReserveSeat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EventService_ReserveSeat_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventServiceServer).ReserveSeat(ctx, req.(*ReserveSeatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EventService_ReleaseSeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReleaseSeatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventServiceServer).ReleaseSeat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EventService_ReleaseSeat_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventServiceServer).ReleaseSeat(ctx, req.(*ReleaseSeatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EventService_ServiceDesc is the grpc.ServiceDesc for EventService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -192,6 +260,14 @@ var EventService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckAvailability",
 			Handler:    _EventService_CheckAvailability_Handler,
+		},
+		{
+			MethodName: "ReserveSeat",
+			Handler:    _EventService_ReserveSeat_Handler,
+		},
+		{
+			MethodName: "ReleaseSeat",
+			Handler:    _EventService_ReleaseSeat_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
