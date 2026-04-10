@@ -4,6 +4,8 @@ import (
 	"crypto/tls"
 	"net"
 	"net/smtp"
+
+	"github.com/baobei23/e-ticket/services/notification-service/internal/domain"
 )
 
 type SMTPMailer struct {
@@ -14,7 +16,7 @@ type SMTPMailer struct {
 	from string
 }
 
-func NewSMTPMailer(host, port, user, pass, from string) *SMTPMailer {
+func NewSMTPMailer(host, port, user, pass, from string) domain.Mailer {
 	return &SMTPMailer{
 		host: host,
 		port: port,

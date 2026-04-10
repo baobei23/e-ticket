@@ -17,7 +17,7 @@ type BookingService struct {
 	paymentProvider domain.PaymentProvider
 }
 
-func NewBookingService(repo domain.BookingRepository, eventProvider domain.EventProvider, publisher domain.BookingPublisher, paymentProvider domain.PaymentProvider) domain.BookingService {
+func NewBookingService(repo domain.BookingRepository, eventProvider domain.EventProvider, publisher domain.BookingPublisher, paymentProvider domain.PaymentProvider) *BookingService {
 	return &BookingService{
 		repo:            repo,
 		eventProvider:   eventProvider,

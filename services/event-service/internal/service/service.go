@@ -10,7 +10,7 @@ type EventService struct {
 	repo domain.EventRepository
 }
 
-func NewEventService(repo domain.EventRepository) domain.EventService {
+func NewEventService(repo domain.EventRepository) *EventService {
 	return &EventService{
 		repo: repo,
 	}

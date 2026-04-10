@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/baobei23/e-ticket/services/auth-service/internal/domain"
 	"github.com/baobei23/e-ticket/shared/contracts"
 	"github.com/baobei23/e-ticket/shared/messaging"
 )
@@ -12,7 +13,7 @@ type UserActivationPublisher struct {
 	mq *messaging.RabbitMQClient
 }
 
-func NewUserActivationPublisher(mq *messaging.RabbitMQClient) *UserActivationPublisher {
+func NewUserActivationPublisher(mq *messaging.RabbitMQClient) domain.UserActivationPublisher {
 	return &UserActivationPublisher{mq: mq}
 }
 

@@ -15,7 +15,7 @@ type StripeGateway struct {
 	cancelURL  string
 }
 
-func NewStripeGateway(apiKey, successURL, cancelURL string) *StripeGateway {
+func NewStripeGateway(apiKey, successURL, cancelURL string) domain.PaymentGateway {
 	stripe.Key = apiKey
 	return &StripeGateway{
 		apiKey:     apiKey,
