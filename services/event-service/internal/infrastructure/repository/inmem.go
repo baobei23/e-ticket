@@ -95,3 +95,37 @@ func (r *inMemRepository) ReduceStock(ctx context.Context, eventID int64, quanti
 	}
 	return errors.New("event not found")
 }
+
+func (r *inMemRepository) ReserveSeat(ctx context.Context, eventID int64, quantity int32) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	for _, e := range r.data {
+		if e.ID == eventID {
+			if e.AvailableSeats < quantity {
+				return errors.New("insufficient seats")
+			}
+			e.AvailableSeats -= quantity
+			return nil
+		}
+	}
+	return errors.New("event not found")
+}
+
+func (r *inMemRepository) ReleaseSeat(ctx context.Context, eventID int64, quantity int32) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	for _, e := range r.data {
+		if e.ID == eventID {
+			// guard opsional supaya tidak lebih dari total_seats
+			if e.AvailableSeats+quantity > e.TotalSeats {
+				e.AvailableSeats = e.TotalSeats
+				return nil
+			}
+			e.AvailableSeats += quantity
+			return nil
+		}
+	}
+	return errors.New("event not found")
+}

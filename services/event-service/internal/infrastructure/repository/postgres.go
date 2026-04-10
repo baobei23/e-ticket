@@ -110,3 +110,49 @@ func (r *PostgresRepository) ReduceStock(ctx context.Context, eventID int64, qua
 
 	return nil
 }
+
+func (r *PostgresRepository) ReserveSeat(ctx context.Context, eventID int64, quantity int32) error {
+	// Atomic Update
+	query := `
+		UPDATE events
+		SET available_seats = available_seats - $1
+		WHERE id = $2 AND available_seats >= $1
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, queryTimeoutDuration)
+	defer cancel()
+
+	tag, err := r.db.Exec(ctx, query, quantity, eventID)
+	if err != nil {
+		return err
+	}
+
+	if tag.RowsAffected() == 0 {
+		return errors.New("insufficient seats or event not found")
+	}
+
+	return nil
+}
+
+func (r *PostgresRepository) ReleaseSeat(ctx context.Context, eventID int64, quantity int32) error {
+	// Atomic Update
+	query := `
+		UPDATE events
+		SET available_seats = available_seats + $1
+		WHERE id = $2
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, queryTimeoutDuration)
+	defer cancel()
+
+	tag, err := r.db.Exec(ctx, query, quantity, eventID)
+	if err != nil {
+		return err
+	}
+
+	if tag.RowsAffected() == 0 {
+		return errors.New("event not found")
+	}
+
+	return nil
+}
