@@ -38,3 +38,11 @@ func (s *EventService) CheckAvailability(ctx context.Context, eventID int64, qua
 func (s *EventService) ReduceStock(ctx context.Context, eventID int64, quantity int32) error {
 	return s.repo.ReduceStock(ctx, eventID, quantity)
 }
+
+func (s *EventService) ReserveSeat(ctx context.Context, eventID int64, quantity int32) error {
+	return s.repo.ReserveSeat(ctx, eventID, quantity)
+}
+
+func (s *EventService) ReleaseSeat(ctx context.Context, eventID int64, quantity int32) error {
+	return s.repo.ReleaseSeat(ctx, eventID, quantity)
+}
