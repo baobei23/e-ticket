@@ -80,3 +80,27 @@ func (h *EventHandler) CheckAvailability(ctx context.Context, req *eventpb.Check
 		UnitPrice:   price,
 	}, nil
 }
+
+func (h *EventHandler) ReserveSeat(ctx context.Context, req *eventpb.ReserveSeatRequest) (*eventpb.ReserveSeatResponse, error) {
+	err := h.service.ReserveSeat(ctx, req.EventId, req.Quantity)
+	if err != nil {
+		return nil, err
+	}
+
+	return &eventpb.ReserveSeatResponse{
+		Reserved: true,
+		Message:  "Seats reserved successfully",
+	}, nil
+}
+
+func (h *EventHandler) ReleaseSeat(ctx context.Context, req *eventpb.ReleaseSeatRequest) (*eventpb.ReleaseSeatResponse, error) {
+	err := h.service.ReleaseSeat(ctx, req.EventId, req.Quantity)
+	if err != nil {
+		return nil, err
+	}
+
+	return &eventpb.ReleaseSeatResponse{
+		Released: true,
+		Message:  "Seats released successfully",
+	}, nil
+}
