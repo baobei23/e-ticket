@@ -56,6 +56,8 @@ type BookingService interface {
 // Event-Service Provider Interface
 type EventProvider interface {
 	CheckAvailability(ctx context.Context, eventID int64, quantity int32) (isAvailable bool, unitPrice float64, err error)
+	ReserveSeat(ctx context.Context, eventID int64, quantity int32, bookingID string) error
+	ReleaseSeat(ctx context.Context, eventID int64, quantity int32, bookingID string) error
 }
 
 // Booking Publisher Interface

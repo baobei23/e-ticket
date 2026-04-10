@@ -49,3 +49,33 @@ func (c *EventGRPCClient) CheckAvailability(ctx context.Context, eventID int64, 
 
 	return resp.IsAvailable, resp.UnitPrice, nil
 }
+
+func (c *EventGRPCClient) ReserveSeat(ctx context.Context, eventID int64, quantity int32, bookingID string) error {
+	resp, err := c.client.ReserveSeat(ctx, &eventpb.ReserveSeatRequest{
+		EventId:   eventID,
+		Quantity:  quantity,
+		BookingId: bookingID,
+	})
+	if err != nil {
+		return err
+	}
+	if !resp.Reserved {
+		return fmt.Errorf("failed to reserve seat: %s", resp.Message)
+	}
+	return nil
+}
+
+func (c *EventGRPCClient) ReleaseSeat(ctx context.Context, eventID int64, quantity int32, bookingID string) error {
+	resp, err := c.client.ReleaseSeat(ctx, &eventpb.ReleaseSeatRequest{
+		EventId:   eventID,
+		Quantity:  quantity,
+		BookingId: bookingID,
+	})
+	if err != nil {
+		return err
+	}
+	if !resp.Released {
+		return fmt.Errorf("failed to release seat: %s", resp.Message)
+	}
+	return nil
+}
