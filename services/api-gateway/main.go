@@ -51,7 +51,7 @@ func main() {
 	r.GET("/events/:id/check", grpc.checkAvailabilityHandler)
 
 	r.POST("/auth/register", grpc.RegisterHandler)
-	r.PUT("/auth/activate/:token", grpc.ActivateHandler)
+	r.GET("/auth/activate/:token", grpc.ActivateHandler)
 	r.POST("/auth/resend-activation", grpc.ResendActivationHandler)
 	r.POST("/auth/login", grpc.LoginHandler)
 
