@@ -3,13 +3,14 @@ package events
 import (
 	"context"
 	"log"
+	"strconv"
 
 	"github.com/baobei23/e-ticket/services/booking-service/internal/domain"
 	"github.com/baobei23/e-ticket/shared/contracts"
 	"github.com/baobei23/e-ticket/shared/messaging"
 )
 
-const bookingExpiryTTLMs = "10000" //10000 600000
+var bookingExpiryTTLMs = strconv.FormatInt(domain.BookingExpiryDuration.Milliseconds(), 10)
 
 type BookingEventPublisher struct {
 	mq *messaging.RabbitMQClient

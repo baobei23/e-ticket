@@ -9,10 +9,11 @@ import (
 
 // Enum Status
 const (
-	StatusPending   = "PENDING"
-	StatusConfirmed = "CONFIRMED"
-	StatusFailed    = "FAILED"
-	StatusCancelled = "CANCELLED"
+	StatusPending         = "PENDING"
+	StatusConfirmed       = "CONFIRMED"
+	StatusFailed          = "FAILED"
+	StatusCancelled       = "CANCELLED"
+	BookingExpiryDuration = 10 * time.Minute
 )
 
 type Booking struct {

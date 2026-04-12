@@ -52,7 +52,7 @@ func (s *BookingService) CreateBooking(ctx context.Context, userID int64, eventI
 		TotalAmount: totalAmount,
 		Status:      domain.StatusPending,
 		CreatedAt:   time.Now(),
-		ExpiresAt:   time.Now().Add(10 * time.Minute),
+		ExpiresAt:   time.Now().Add(domain.BookingExpiryDuration),
 	}
 
 	if err := s.repo.Create(ctx, booking); err != nil {
