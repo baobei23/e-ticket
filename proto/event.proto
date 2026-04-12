@@ -76,6 +76,7 @@ message ReserveSeatRequest {
 message ReserveSeatResponse {
   bool reserved = 1;
   string message = 2;
+  double unit_price = 3;
 }
 
 message ReleaseSeatRequest {

@@ -601,6 +601,7 @@ type ReserveSeatResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Reserved      bool                   `protobuf:"varint,1,opt,name=reserved,proto3" json:"reserved,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	UnitPrice     float64                `protobuf:"fixed64,3,opt,name=unit_price,json=unitPrice,proto3" json:"unit_price,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -647,6 +648,13 @@ func (x *ReserveSeatResponse) GetMessage() string {
 		return x.Message
 	}
 	return ""
+}
+
+func (x *ReserveSeatResponse) GetUnitPrice() float64 {
+	if x != nil {
+		return x.UnitPrice
+	}
+	return 0
 }
 
 type ReleaseSeatRequest struct {
@@ -811,10 +819,12 @@ const file_proto_event_proto_rawDesc = "" +
 	"\bevent_id\x18\x01 \x01(\x03R\aeventId\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x05R\bquantity\x12\x1d\n" +
 	"\n" +
-	"booking_id\x18\x03 \x01(\tR\tbookingId\"K\n" +
+	"booking_id\x18\x03 \x01(\tR\tbookingId\"j\n" +
 	"\x13ReserveSeatResponse\x12\x1a\n" +
 	"\breserved\x18\x01 \x01(\bR\breserved\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"j\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1d\n" +
+	"\n" +
+	"unit_price\x18\x03 \x01(\x01R\tunitPrice\"j\n" +
 	"\x12ReleaseSeatRequest\x12\x19\n" +
 	"\bevent_id\x18\x01 \x01(\x03R\aeventId\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x05R\bquantity\x12\x1d\n" +
