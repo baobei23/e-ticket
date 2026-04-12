@@ -31,7 +31,7 @@ func NewPaymentService(
 	}
 }
 
-func (s *PaymentService) CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64, unitPrice float64, quantity int32) (*domain.Payment, error) {
+func (s *PaymentService) CreatePayment(ctx context.Context, bookingID string, userID int64, amount int64, unitPrice int64, quantity int32) (*domain.Payment, error) {
 
 	if amount <= 0 {
 		return nil, errors.New("invalid amount")

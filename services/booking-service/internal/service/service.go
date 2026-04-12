@@ -32,17 +32,12 @@ func (s *BookingService) CreateBooking(ctx context.Context, userID int64, eventI
 
 	bookingID := uuid.New().String()
 
-	if err := s.eventProvider.ReserveSeat(ctx, eventID, quantity, bookingID); err != nil {
+	unitPrice, err := s.eventProvider.ReserveSeat(ctx, eventID, quantity, bookingID)
+	if err != nil {
 		return nil, "", fmt.Errorf("failed to reserve seat: %w", err)
 	}
 
-	_, unitPrice, err := s.eventProvider.CheckAvailability(ctx, eventID, quantity)
-	if err != nil {
-		s.eventProvider.ReleaseSeat(ctx, eventID, quantity, bookingID)
-		return nil, "", fmt.Errorf("failed to check availability: %w", err)
-	}
-
-	totalAmount := unitPrice * float64(quantity)
+	totalAmount := unitPrice * int64(quantity)
 
 	booking := &domain.Booking{
 		ID:          bookingID,

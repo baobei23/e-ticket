@@ -111,27 +111,27 @@ func (r *PostgresRepository) ReduceStock(ctx context.Context, eventID int64, qua
 	return nil
 }
 
-func (r *PostgresRepository) ReserveSeat(ctx context.Context, eventID int64, quantity int32) error {
+func (r *PostgresRepository) ReserveSeat(ctx context.Context, eventID int64, quantity int32) (int64, error) {
 	// Atomic Update
 	query := `
 		UPDATE events
 		SET available_seats = available_seats - $1
 		WHERE id = $2 AND available_seats >= $1
+		RETURNING price
 	`
 
 	ctx, cancel := context.WithTimeout(ctx, queryTimeoutDuration)
 	defer cancel()
 
-	tag, err := r.db.Exec(ctx, query, quantity, eventID)
+	var unitPrice int64
+	err := r.db.QueryRow(ctx, query, quantity, eventID).Scan(&unitPrice)
 	if err != nil {
-		return err
+		if errors.Is(err, pgx.ErrNoRows) {
+			return 0, errors.New("insufficient seats or event not found")
+		}
+		return 0, err
 	}
-
-	if tag.RowsAffected() == 0 {
-		return errors.New("insufficient seats or event not found")
-	}
-
-	return nil
+	return unitPrice, nil
 }
 
 func (r *PostgresRepository) ReleaseSeat(ctx context.Context, eventID int64, quantity int32) error {

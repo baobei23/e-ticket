@@ -24,7 +24,7 @@ func (s *EventService) GetEventDetail(ctx context.Context, id int64) (*domain.Ev
 	return s.repo.GetByID(ctx, id)
 }
 
-func (s *EventService) CheckAvailability(ctx context.Context, eventID int64, quantity int32) (bool, float64, error) {
+func (s *EventService) CheckAvailability(ctx context.Context, eventID int64, quantity int32) (bool, int64, error) {
 	event, err := s.repo.GetByID(ctx, eventID)
 	if err != nil {
 		return false, 0, err
@@ -39,7 +39,7 @@ func (s *EventService) ReduceStock(ctx context.Context, eventID int64, quantity 
 	return s.repo.ReduceStock(ctx, eventID, quantity)
 }
 
-func (s *EventService) ReserveSeat(ctx context.Context, eventID int64, quantity int32) error {
+func (s *EventService) ReserveSeat(ctx context.Context, eventID int64, quantity int32) (int64, error) {
 	return s.repo.ReserveSeat(ctx, eventID, quantity)
 }
 

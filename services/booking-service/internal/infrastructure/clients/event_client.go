@@ -37,7 +37,7 @@ func (c *EventGRPCClient) Close() error {
 	return c.conn.Close()
 }
 
-func (c *EventGRPCClient) CheckAvailability(ctx context.Context, eventID int64, quantity int32) (bool, float64, error) {
+func (c *EventGRPCClient) CheckAvailability(ctx context.Context, eventID int64, quantity int32) (bool, int64, error) {
 	resp, err := c.client.CheckAvailability(ctx, &eventpb.CheckAvailabilityRequest{
 		EventId:  eventID,
 		Quantity: quantity,
@@ -50,19 +50,19 @@ func (c *EventGRPCClient) CheckAvailability(ctx context.Context, eventID int64, 
 	return resp.IsAvailable, resp.UnitPrice, nil
 }
 
-func (c *EventGRPCClient) ReserveSeat(ctx context.Context, eventID int64, quantity int32, bookingID string) error {
+func (c *EventGRPCClient) ReserveSeat(ctx context.Context, eventID int64, quantity int32, bookingID string) (int64, error) {
 	resp, err := c.client.ReserveSeat(ctx, &eventpb.ReserveSeatRequest{
 		EventId:   eventID,
 		Quantity:  quantity,
 		BookingId: bookingID,
 	})
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if !resp.Reserved {
-		return fmt.Errorf("failed to reserve seat: %s", resp.Message)
+		return 0, fmt.Errorf("failed to reserve seat: %s", resp.Message)
 	}
-	return nil
+	return resp.UnitPrice, nil
 }
 
 func (c *EventGRPCClient) ReleaseSeat(ctx context.Context, eventID int64, quantity int32, bookingID string) error {

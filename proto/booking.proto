@@ -14,7 +14,7 @@ message Booking {
     int64 user_id = 2;
     int64 event_id = 3;
     int32 quantity = 4;
-    double total_amount = 5;
+    int64 total_amount = 5;
     string status = 6; // PENDING, CONFIRMED, CANCELLED, FAILED
     int64 created_at = 7;
 }

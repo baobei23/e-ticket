@@ -33,9 +33,9 @@ type BookingCreatedEvent struct {
 
 // Payload: Payment Success
 type PaymentSuccessEvent struct {
-	BookingID string  `json:"booking_id"`
-	PaymentID string  `json:"payment_id"`
-	Amount    float64 `json:"amount"`
+	BookingID string `json:"booking_id"`
+	PaymentID string `json:"payment_id"`
+	Amount    int64  `json:"amount"`
 }
 
 // Payload: Payment Failed

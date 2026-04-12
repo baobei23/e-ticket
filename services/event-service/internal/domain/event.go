@@ -16,7 +16,7 @@ type Event struct {
 	EndTime        time.Time
 	TotalSeats     int32
 	AvailableSeats int32
-	Price          float64
+	Price          int64
 }
 
 func (e *Event) ToProto() *eventpb.Event {
@@ -37,15 +37,15 @@ type EventRepository interface {
 	GetAll(ctx context.Context, page, limit int) ([]*Event, int64, error)
 	GetByID(ctx context.Context, id int64) (*Event, error)
 	ReduceStock(ctx context.Context, eventID int64, quantity int32) error
-	ReserveSeat(ctx context.Context, eventID int64, quantity int32) error
+	ReserveSeat(ctx context.Context, eventID int64, quantity int32) (int64, error)
 	ReleaseSeat(ctx context.Context, eventID int64, quantity int32) error
 }
 
 type EventService interface {
 	GetEvents(ctx context.Context, page, limit int) ([]*Event, int64, error)
 	GetEventDetail(ctx context.Context, id int64) (*Event, error)
-	CheckAvailability(ctx context.Context, eventID int64, quantity int32) (bool, float64, error)
+	CheckAvailability(ctx context.Context, eventID int64, quantity int32) (bool, int64, error)
 	ReduceStock(ctx context.Context, eventID int64, quantity int32) error
-	ReserveSeat(ctx context.Context, eventID int64, quantity int32) error
+	ReserveSeat(ctx context.Context, eventID int64, quantity int32) (int64, error)
 	ReleaseSeat(ctx context.Context, eventID int64, quantity int32) error
 }

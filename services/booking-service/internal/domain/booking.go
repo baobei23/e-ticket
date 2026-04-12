@@ -21,7 +21,7 @@ type Booking struct {
 	UserID      int64
 	EventID     int64
 	Quantity    int32
-	TotalAmount float64
+	TotalAmount int64
 	Status      string
 	CreatedAt   time.Time
 	ExpiresAt   time.Time
@@ -59,8 +59,8 @@ type BookingService interface {
 
 // Event-Service Provider Interface
 type EventProvider interface {
-	CheckAvailability(ctx context.Context, eventID int64, quantity int32) (isAvailable bool, unitPrice float64, err error)
-	ReserveSeat(ctx context.Context, eventID int64, quantity int32, bookingID string) error
+	CheckAvailability(ctx context.Context, eventID int64, quantity int32) (isAvailable bool, unitPrice int64, err error)
+	ReserveSeat(ctx context.Context, eventID int64, quantity int32, bookingID string) (int64, error)
 	ReleaseSeat(ctx context.Context, eventID int64, quantity int32, bookingID string) error
 }
 
@@ -71,5 +71,5 @@ type BookingPublisher interface {
 }
 
 type PaymentProvider interface {
-	CreatePayment(ctx context.Context, bookingID string, userID int64, amount float64, unitPrice float64, quantity int32) (string, error) // Returns paymentURL
+	CreatePayment(ctx context.Context, bookingID string, userID int64, amount int64, unitPrice int64, quantity int32) (string, error)
 }

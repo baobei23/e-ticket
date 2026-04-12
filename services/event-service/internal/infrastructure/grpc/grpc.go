@@ -82,14 +82,15 @@ func (h *EventHandler) CheckAvailability(ctx context.Context, req *eventpb.Check
 }
 
 func (h *EventHandler) ReserveSeat(ctx context.Context, req *eventpb.ReserveSeatRequest) (*eventpb.ReserveSeatResponse, error) {
-	err := h.service.ReserveSeat(ctx, req.EventId, req.Quantity)
+	unitPrice, err := h.service.ReserveSeat(ctx, req.EventId, req.Quantity)
 	if err != nil {
 		return nil, err
 	}
 
 	return &eventpb.ReserveSeatResponse{
-		Reserved: true,
-		Message:  "Seats reserved successfully",
+		Reserved:  true,
+		Message:   "Seats reserved successfully",
+		UnitPrice: unitPrice,
 	}, nil
 }
 

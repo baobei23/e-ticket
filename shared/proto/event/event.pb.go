@@ -31,7 +31,7 @@ type Event struct {
 	EndTime        int64                  `protobuf:"varint,6,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 	TotalSeats     int32                  `protobuf:"varint,7,opt,name=total_seats,json=totalSeats,proto3" json:"total_seats,omitempty"`
 	AvailableSeats int32                  `protobuf:"varint,8,opt,name=available_seats,json=availableSeats,proto3" json:"available_seats,omitempty"`
-	Price          float64                `protobuf:"fixed64,9,opt,name=price,proto3" json:"price,omitempty"`
+	Price          int64                  `protobuf:"varint,9,opt,name=price,proto3" json:"price,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -122,7 +122,7 @@ func (x *Event) GetAvailableSeats() int32 {
 	return 0
 }
 
-func (x *Event) GetPrice() float64 {
+func (x *Event) GetPrice() int64 {
 	if x != nil {
 		return x.Price
 	}
@@ -488,7 +488,7 @@ func (x *CheckAvailabilityRequest) GetQuantity() int32 {
 type CheckAvailabilityResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	IsAvailable   bool                   `protobuf:"varint,1,opt,name=is_available,json=isAvailable,proto3" json:"is_available,omitempty"`
-	UnitPrice     float64                `protobuf:"fixed64,2,opt,name=unit_price,json=unitPrice,proto3" json:"unit_price,omitempty"`
+	UnitPrice     int64                  `protobuf:"varint,2,opt,name=unit_price,json=unitPrice,proto3" json:"unit_price,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -530,7 +530,7 @@ func (x *CheckAvailabilityResponse) GetIsAvailable() bool {
 	return false
 }
 
-func (x *CheckAvailabilityResponse) GetUnitPrice() float64 {
+func (x *CheckAvailabilityResponse) GetUnitPrice() int64 {
 	if x != nil {
 		return x.UnitPrice
 	}
@@ -601,7 +601,7 @@ type ReserveSeatResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Reserved      bool                   `protobuf:"varint,1,opt,name=reserved,proto3" json:"reserved,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	UnitPrice     float64                `protobuf:"fixed64,3,opt,name=unit_price,json=unitPrice,proto3" json:"unit_price,omitempty"`
+	UnitPrice     int64                  `protobuf:"varint,3,opt,name=unit_price,json=unitPrice,proto3" json:"unit_price,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -650,7 +650,7 @@ func (x *ReserveSeatResponse) GetMessage() string {
 	return ""
 }
 
-func (x *ReserveSeatResponse) GetUnitPrice() float64 {
+func (x *ReserveSeatResponse) GetUnitPrice() int64 {
 	if x != nil {
 		return x.UnitPrice
 	}
@@ -785,7 +785,7 @@ const file_proto_event_proto_rawDesc = "" +
 	"\vtotal_seats\x18\a \x01(\x05R\n" +
 	"totalSeats\x12'\n" +
 	"\x0favailable_seats\x18\b \x01(\x05R\x0eavailableSeats\x12\x14\n" +
-	"\x05price\x18\t \x01(\x01R\x05price\"=\n" +
+	"\x05price\x18\t \x01(\x03R\x05price\"=\n" +
 	"\x11PaginationRequest\x12\x12\n" +
 	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\"\x98\x01\n" +
@@ -814,7 +814,7 @@ const file_proto_event_proto_rawDesc = "" +
 	"\x19CheckAvailabilityResponse\x12!\n" +
 	"\fis_available\x18\x01 \x01(\bR\visAvailable\x12\x1d\n" +
 	"\n" +
-	"unit_price\x18\x02 \x01(\x01R\tunitPrice\"j\n" +
+	"unit_price\x18\x02 \x01(\x03R\tunitPrice\"j\n" +
 	"\x12ReserveSeatRequest\x12\x19\n" +
 	"\bevent_id\x18\x01 \x01(\x03R\aeventId\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x05R\bquantity\x12\x1d\n" +
@@ -824,7 +824,7 @@ const file_proto_event_proto_rawDesc = "" +
 	"\breserved\x18\x01 \x01(\bR\breserved\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1d\n" +
 	"\n" +
-	"unit_price\x18\x03 \x01(\x01R\tunitPrice\"j\n" +
+	"unit_price\x18\x03 \x01(\x03R\tunitPrice\"j\n" +
 	"\x12ReleaseSeatRequest\x12\x19\n" +
 	"\bevent_id\x18\x01 \x01(\x03R\aeventId\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x05R\bquantity\x12\x1d\n" +

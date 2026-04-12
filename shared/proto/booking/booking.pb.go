@@ -27,7 +27,7 @@ type Booking struct {
 	UserId        int64                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	EventId       int64                  `protobuf:"varint,3,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
 	Quantity      int32                  `protobuf:"varint,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	TotalAmount   float64                `protobuf:"fixed64,5,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
+	TotalAmount   int64                  `protobuf:"varint,5,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
 	Status        string                 `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty"` // PENDING, CONFIRMED, CANCELLED, FAILED
 	CreatedAt     int64                  `protobuf:"varint,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -92,7 +92,7 @@ func (x *Booking) GetQuantity() int32 {
 	return 0
 }
 
-func (x *Booking) GetTotalAmount() float64 {
+func (x *Booking) GetTotalAmount() int64 {
 	if x != nil {
 		return x.TotalAmount
 	}
@@ -340,7 +340,7 @@ const file_proto_booking_proto_rawDesc = "" +
 	"\auser_id\x18\x02 \x01(\x03R\x06userId\x12\x19\n" +
 	"\bevent_id\x18\x03 \x01(\x03R\aeventId\x12\x1a\n" +
 	"\bquantity\x18\x04 \x01(\x05R\bquantity\x12!\n" +
-	"\ftotal_amount\x18\x05 \x01(\x01R\vtotalAmount\x12\x16\n" +
+	"\ftotal_amount\x18\x05 \x01(\x03R\vtotalAmount\x12\x16\n" +
 	"\x06status\x18\x06 \x01(\tR\x06status\x12\x1d\n" +
 	"\n" +
 	"created_at\x18\a \x01(\x03R\tcreatedAt\"f\n" +
