@@ -80,6 +80,9 @@ func main() {
 	paymentConsumer := events.NewPaymentConsumer(mqClient, svc)
 	paymentConsumer.Start()
 
+	expiryConsumer := events.NewExpiryConsumer(mqClient, svc)
+	expiryConsumer.Start()
+
 	// Init gRPC Server
 	grpcServer := grpcserver.NewServer(tracing.WithTracingInterceptors()...)
 

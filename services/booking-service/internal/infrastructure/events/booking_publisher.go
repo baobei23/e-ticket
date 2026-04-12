@@ -9,6 +9,8 @@ import (
 	"github.com/baobei23/e-ticket/shared/messaging"
 )
 
+const bookingExpiryTTLMs = "10000" //10000 600000
+
 type BookingEventPublisher struct {
 	mq *messaging.RabbitMQClient
 }
@@ -32,6 +34,20 @@ func (p *BookingEventPublisher) PublishBookingCreated(ctx context.Context, booki
 
 	if err != nil {
 		log.Printf("Failed to publish BookingCreated event: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func (p *BookingEventPublisher) PublishBookingExpiry(ctx context.Context, bookingID string) error {
+	payload := contracts.BookingExpiryEvent{
+		BookingID: bookingID,
+	}
+
+	err := p.mq.PublishWithExpiry(ctx, contracts.QueueBookingExpiryPending, "BookingExpired", payload, bookingExpiryTTLMs)
+	if err != nil {
+		log.Printf("Failed to publish BookingExpired event: %v", err)
 		return err
 	}
 

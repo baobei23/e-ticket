@@ -16,6 +16,7 @@ const (
 	ExchangeType       = "topic"
 	DeadLetterExchange = "e_ticket_dlx"
 	DeadLetterQueue    = "e_ticket_dlq"
+	BookingExpiryDLX   = "booking_expiry_dlx"
 )
 
 type RabbitMQClient struct {
@@ -89,6 +90,42 @@ func (c *RabbitMQClient) setupTopology() error {
 		return err
 	}
 
+	if err := c.setupBookingExpiryTopology(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *RabbitMQClient) setupBookingExpiryTopology() error {
+	// Exchange DLX khusus expiry (topic), terpisah dari e_ticket_dlx (fanout)
+	if err := c.ch.ExchangeDeclare(BookingExpiryDLX, "direct", true, false, false, false, nil); err != nil {
+		return fmt.Errorf("failed to declare booking expiry DLX: %w", err)
+	}
+
+	// Queue pending: message "tidur" di sini, tidak ada consumer.
+	// Saat TTL per-message habis, message dikirim ke BookingExpiryDLX dengan routing key "BookingExpired".
+	_, err := c.ch.QueueDeclare(contracts.QueueBookingExpiryPending, true, false, false, false, amqp.Table{
+		"x-dead-letter-exchange":    BookingExpiryDLX,
+		"x-dead-letter-routing-key": "BookingExpired",
+	})
+	if err != nil {
+		return fmt.Errorf("failed to declare booking expiry pending queue: %w", err)
+	}
+
+	// Queue process: consumer expiry ambil message dari sini.
+	q, err := c.ch.QueueDeclare(contracts.QueueBookingExpiryProcess, true, false, false, false, amqp.Table{
+		"x-dead-letter-exchange": DeadLetterExchange,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to declare booking expiry process queue: %w", err)
+	}
+
+	// Bind queue process ke BookingExpiryDLX dengan routing key "BookingExpired"
+	if err := c.ch.QueueBind(q.Name, "BookingExpired", BookingExpiryDLX, false, nil); err != nil {
+		return fmt.Errorf("failed to bind booking expiry process queue: %w", err)
+	}
+
 	return nil
 }
 
@@ -133,6 +170,38 @@ func (c *RabbitMQClient) Publish(ctx context.Context, eventName string, payload 
 		amqp.Publishing{
 			DeliveryMode: amqp.Persistent,
 			ContentType:  "application/json",
+			Body:         body,
+		},
+	)
+}
+
+// PublishWithExpiry publish langsung ke queue (default exchange) dengan per-message TTL
+func (c *RabbitMQClient) PublishWithExpiry(ctx context.Context, queueName string, eventName string, payload interface{}, ttlMs string) error {
+	envelope := contracts.AmqpMessage{
+		EventName: eventName,
+		Timestamp: time.Now(),
+	}
+
+	payloadBytes, _ := json.Marshal(payload)
+	envelope.Payload = payloadBytes
+
+	body, err := json.Marshal(envelope)
+	if err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	return c.ch.PublishWithContext(ctx,
+		"",        // default exchange
+		queueName, // routing key = queue name
+		false,
+		false,
+		amqp.Publishing{
+			DeliveryMode: amqp.Persistent,
+			ContentType:  "application/json",
+			Expiration:   ttlMs,
 			Body:         body,
 		},
 	)

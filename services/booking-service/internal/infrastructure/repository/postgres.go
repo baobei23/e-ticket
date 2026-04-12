@@ -22,26 +22,28 @@ var queryTimeoutDuration = 5 * time.Second
 
 func (r *PostgresRepository) Create(ctx context.Context, booking *domain.Booking) error {
 	query := `
-		INSERT INTO bookings (id, user_id, event_id, quantity, total_amount, status, created_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO bookings (id, user_id, event_id, quantity, total_amount, status, created_at, expires_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	`
 	ctx, cancel := context.WithTimeout(ctx, queryTimeoutDuration)
 	defer cancel()
 	_, err := r.db.Exec(ctx, query,
 		booking.ID, booking.UserID, booking.EventID,
 		booking.Quantity, booking.TotalAmount, booking.Status, booking.CreatedAt,
+		booking.ExpiresAt,
 	)
 	return err
 }
 
 func (r *PostgresRepository) GetByID(ctx context.Context, id string) (*domain.Booking, error) {
-	query := `SELECT id, user_id, event_id, quantity, total_amount, status, created_at FROM bookings WHERE id = $1`
+	query := `SELECT id, user_id, event_id, quantity, total_amount, status, created_at, expires_at FROM bookings WHERE id = $1`
 	ctx, cancel := context.WithTimeout(ctx, queryTimeoutDuration)
 	defer cancel()
 	var b domain.Booking
 	err := r.db.QueryRow(ctx, query, id).Scan(
 		&b.ID, &b.UserID, &b.EventID, &b.Quantity,
 		&b.TotalAmount, &b.Status, &b.CreatedAt,
+		&b.ExpiresAt,
 	)
 
 	if err != nil {
@@ -58,6 +60,20 @@ func (r *PostgresRepository) UpdateStatus(ctx context.Context, id string, status
 	ctx, cancel := context.WithTimeout(ctx, queryTimeoutDuration)
 	defer cancel()
 	tag, err := r.db.Exec(ctx, query, status, id)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return errors.New("booking not found")
+	}
+	return nil
+}
+
+func (r *PostgresRepository) CancelBooking(ctx context.Context, id string) error {
+	query := `UPDATE bookings SET status = 'CANCELLED' WHERE id = $1 AND status = 'PENDING'`
+	ctx, cancel := context.WithTimeout(ctx, queryTimeoutDuration)
+	defer cancel()
+	tag, err := r.db.Exec(ctx, query, id)
 	if err != nil {
 		return err
 	}

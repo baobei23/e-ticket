@@ -23,6 +23,7 @@ type Booking struct {
 	TotalAmount float64
 	Status      string
 	CreatedAt   time.Time
+	ExpiresAt   time.Time
 }
 
 func (b *Booking) ToProto() *bookingpb.Booking {
@@ -43,6 +44,7 @@ type BookingRepository interface {
 	Create(ctx context.Context, booking *Booking) error
 	GetByID(ctx context.Context, id string) (*Booking, error)
 	UpdateStatus(ctx context.Context, id string, status string) error
+	CancelBooking(ctx context.Context, id string) error
 }
 
 // Service Interface (Use Cases)
@@ -51,6 +53,7 @@ type BookingService interface {
 	GetBookingDetail(ctx context.Context, bookingID string, userID int64) (*Booking, error)
 	ConfirmBooking(ctx context.Context, bookingID string) error
 	FailBooking(ctx context.Context, bookingID string) error
+	ExpireBooking(ctx context.Context, bookingID string) error
 }
 
 // Event-Service Provider Interface
@@ -63,6 +66,7 @@ type EventProvider interface {
 // Booking Publisher Interface
 type BookingPublisher interface {
 	PublishBookingCreated(ctx context.Context, booking *Booking) error
+	PublishBookingExpiry(ctx context.Context, bookingID string) error
 }
 
 type PaymentProvider interface {

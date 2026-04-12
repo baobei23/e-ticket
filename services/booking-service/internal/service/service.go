@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/baobei23/e-ticket/services/booking-service/internal/domain"
@@ -51,11 +52,16 @@ func (s *BookingService) CreateBooking(ctx context.Context, userID int64, eventI
 		TotalAmount: totalAmount,
 		Status:      domain.StatusPending,
 		CreatedAt:   time.Now(),
+		ExpiresAt:   time.Now().Add(10 * time.Minute),
 	}
 
 	if err := s.repo.Create(ctx, booking); err != nil {
 		s.eventProvider.ReleaseSeat(ctx, eventID, quantity, bookingID)
 		return nil, "", fmt.Errorf("failed to create booking: %w", err)
+	}
+
+	if err := s.publisher.PublishBookingExpiry(ctx, bookingID); err != nil {
+		log.Printf("Failed to publish BookingExpired event: %v", err)
 	}
 
 	paymentURL, err := s.paymentProvider.CreatePayment(ctx, bookingID, userID, totalAmount, unitPrice, quantity)
@@ -86,4 +92,19 @@ func (s *BookingService) ConfirmBooking(ctx context.Context, bookingID string) e
 
 func (s *BookingService) FailBooking(ctx context.Context, bookingID string) error {
 	return s.repo.UpdateStatus(ctx, bookingID, domain.StatusFailed)
+}
+
+func (s *BookingService) ExpireBooking(ctx context.Context, bookingID string) error {
+	booking, err := s.repo.GetByID(ctx, bookingID)
+	if err != nil {
+		return fmt.Errorf("failed to get booking: %w", err)
+	}
+
+	err = s.repo.CancelBooking(ctx, bookingID)
+	if err != nil {
+		return fmt.Errorf("failed to cancel booking: %w", err)
+	}
+
+	s.eventProvider.ReleaseSeat(ctx, booking.EventID, booking.Quantity, bookingID)
+	return nil
 }

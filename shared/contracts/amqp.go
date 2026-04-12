@@ -11,6 +11,8 @@ const (
 	QueuePaymentSuccess          = "payment.success"
 	QueuePaymentFailed           = "payment.failed"
 	QueueUserActivationRequested = "user.activation_requested"
+	QueueBookingExpiryPending    = "booking.expiry.pending"
+	QueueBookingExpiryProcess    = "booking.expiry.process"
 )
 
 // Wrapper Message Standar
@@ -48,4 +50,8 @@ type UserActivationRequestedEvent struct {
 	Email     string    `json:"email"`
 	Token     string    `json:"token"`
 	ExpiresAt time.Time `json:"expires_at"`
+}
+
+type BookingExpiryEvent struct {
+	BookingID string `json:"booking_id"`
 }

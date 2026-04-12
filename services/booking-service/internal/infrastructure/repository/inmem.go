@@ -45,3 +45,13 @@ func (r *inMemBookingRepository) UpdateStatus(ctx context.Context, id string, st
 	}
 	return errors.New("booking not found")
 }
+
+func (r *inMemBookingRepository) CancelBooking(ctx context.Context, id string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if booking, ok := r.data[id]; ok && booking.Status == domain.StatusPending {
+		booking.Status = domain.StatusCancelled
+		return nil
+	}
+	return errors.New("booking not found or not pending")
+}
