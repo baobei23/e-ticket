@@ -13,16 +13,19 @@ sequenceDiagram
 
   User ->> APIGW: POST /bookings (event_id, quantity)
   APIGW ->> Booking: gRPC CreateBooking
-  Booking ->> Event: gRPC CheckAvailability
-  Event ->> DB: check stock + price
-  Event -->> Booking: available + unit_price
 
-  Booking ->> DB: INSERT booking (PENDING)
-  Booking -->> MQ: BookingCreated event
+  Booking ->> Event: gRPC ReserveSeat (atomic: reduce stock + return unit_price)
+  Event ->> DB: UPDATE available_seats, RETURNING price
+  Event -->> Booking: unit_price
+
+  Booking ->> DB: INSERT booking (PENDING, expires_at)
+  Booking -->> MQ: publish BookingExpiry (TTL 30 min, DLX delayed)
+
   Booking ->> Payment: gRPC CreatePayment
-  Payment ->> Stripe: Create checkout session
+  Payment ->> Stripe: Create checkout session (expires_at = 30 min)
   Stripe -->> Payment: session created
   Payment -->> Booking: payment_url
+
   Booking -->> APIGW: booking + payment_url
   APIGW -->> User: 201 Created
 ```

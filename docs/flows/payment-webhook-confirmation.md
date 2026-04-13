@@ -8,12 +8,11 @@ sequenceDiagram
   participant MQ as RabbitMQ
   participant Booking as Booking Service
   participant DB as Postgres
-
-  Stripe ->> APIGW: Webhook payment event
+  Stripe ->> APIGW: Webhook checkout.session.completed
   APIGW ->> Payment: gRPC HandleWebhook (payload, signature)
-  Payment ->> DB: update payment status
+  Payment ->> Payment: Verify Stripe signature
+  Payment ->> DB: UPDATE payment status (SUCCESS)
   Payment -->> MQ: PaymentSuccess event
-
   MQ -->> Booking: consume PaymentSuccess
-  Booking ->> DB: update booking status (CONFIRMED)
+  Booking ->> DB: UPDATE booking status (CONFIRMED)
 ```
