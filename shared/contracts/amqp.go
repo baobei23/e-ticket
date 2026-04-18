@@ -27,15 +27,17 @@ type BookingCreatedEvent struct {
 	BookingID string    `json:"booking_id"`
 	UserID    int64     `json:"user_id"`
 	EventID   int64     `json:"event_id"`
+	SeatIDs   []int64   `json:"seat_ids"`
 	Quantity  int32     `json:"quantity"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 // Payload: Payment Success
 type PaymentSuccessEvent struct {
-	BookingID string `json:"booking_id"`
-	PaymentID string `json:"payment_id"`
-	Amount    int64  `json:"amount"`
+	BookingID string  `json:"booking_id"`
+	SeatIDs   []int64 `json:"seat_ids"`
+	PaymentID string  `json:"payment_id"`
+	Amount    int64   `json:"amount"`
 }
 
 // Payload: Payment Failed

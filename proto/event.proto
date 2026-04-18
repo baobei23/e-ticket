@@ -9,11 +9,11 @@ option go_package = "shared/proto/event";
 service EventService {
     rpc GetEvents(GetEventsRequest) returns (GetEventsResponse);
     rpc GetEventDetail(GetEventDetailRequest) returns (GetEventDetailResponse);
+    rpc GetSeatMap(GetSeatMapRequest) returns (GetSeatMapResponse);
     
-    // Internal use / Booking service use
-    rpc CheckAvailability(CheckAvailabilityRequest) returns (CheckAvailabilityResponse);
-    rpc ReserveSeat(ReserveSeatRequest) returns (ReserveSeatResponse);
-    rpc ReleaseSeat(ReleaseSeatRequest) returns (ReleaseSeatResponse);
+    rpc ReserveSeat(ReserveSeatsRequest) returns (ReserveSeatsResponse);
+    rpc ReleaseSeat(ReleaseSeatsRequest) returns (ReleaseSeatsResponse);
+    rpc ConfirmSeats(ConfirmSeatsRequest) returns (ConfirmSeatsResponse);
 }
 
 message Event {
@@ -21,71 +21,58 @@ message Event {
     string name = 2;
     string description = 3;
     string location = 4;
-    int64 start_time = 5; // Unix timestamp
+    int64 start_time = 5; 
     int64 end_time = 6;
     int32 total_seats = 7;
     int32 available_seats = 8;
     int64 price = 9;
+    int64 min_price = 10;
+    int64 max_price = 11;
 }
 
-message PaginationRequest {
-  int32 page = 1;
-  int32 limit = 2;
+message SeatCategory {
+  int64 id = 1;
+  string name = 2;
+  int64 price = 3;
+  string color = 4;
 }
 
-message PaginationMetadata {
-  int32 current_page = 1;
-  int32 total_pages = 2;
-  int32 total_items = 3;
-  int32 page_limit = 4;
+
+message Seat {
+  int64  id          = 1;
+  string label       = 2;      // "A1"
+  string row_label   = 3;      // "A"
+  int32  seat_number = 4;      // 1
+  int64  category_id = 5;
+  string category    = 6;
+  int64  price       = 7;
+  string status      = 8;
 }
 
-message GetEventsRequest {
-    PaginationRequest pagination = 1;
+message GetSeatMapRequest  { int64 event_id = 1; }
+message GetSeatMapResponse {
+    repeated SeatCategory categories = 1;
+    repeated Seat seats = 2;
 }
 
-message GetEventsResponse {
-    repeated Event events = 1;
-    PaginationMetadata meta = 2;
+message ReserveSeatsRequest {
+  int64    event_id   = 1;
+  repeated int64 seat_ids = 2;
+  string   booking_id = 3;
 }
-
-message GetEventDetailRequest {
-    int64 event_id = 1;
-}
-
-message GetEventDetailResponse {
-    Event event = 1;
-}
-
-message CheckAvailabilityRequest {
-    int64 event_id = 1;
-    int32 quantity = 2;
-}
-
-message CheckAvailabilityResponse {
-    bool is_available = 1;
-    int64 unit_price = 2; 
-}
-
-message ReserveSeatRequest {
-  int64 event_id = 1;
-  int32 quantity = 2;
-  string booking_id = 3;
-}
-
-message ReserveSeatResponse {
+message ReserveSeatsResponse {
   bool reserved = 1;
   string message = 2;
-  int64 unit_price = 3;
+  int64 total_amount = 3;
+  repeated Seat reserved_seats = 4;
 }
-
-message ReleaseSeatRequest {
-  int64 event_id = 1;
-  int32 quantity = 2;
-  string booking_id = 3;
-}
-
-message ReleaseSeatResponse {
-  bool released = 1;
-  string message = 2;
-}
+message ReleaseSeatsRequest  { string booking_id = 1; }
+message ReleaseSeatsResponse { bool released = 1; string message = 2; }
+message ConfirmSeatsRequest  { string booking_id = 1; }
+message ConfirmSeatsResponse { bool confirmed = 1; string message = 2; }
+message PaginationRequest   { int32 page = 1; int32 limit = 2; }
+message PaginationMetadata  { int32 current_page=1; int32 total_pages=2; int32 total_items=3; int32 page_limit=4; }
+message GetEventsRequest  { PaginationRequest pagination = 1; }
+message GetEventsResponse { repeated Event events = 1; PaginationMetadata meta = 2; }
+message GetEventDetailRequest  { int64 event_id = 1; }
+message GetEventDetailResponse { Event event = 1; }

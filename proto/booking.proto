@@ -9,26 +9,34 @@ service BookingService {
     rpc GetBookingDetail(GetBookingDetailRequest) returns (GetBookingDetailResponse);
 }
 
+
+message BookingSeat {
+  int64  seat_id    = 1;
+  string seat_label = 2;
+  int64  unit_price = 3;
+  string category   = 4;
+}
+
 message Booking {
-    string booking_id = 1; // UUID
+    string booking_id = 1;
     int64 user_id = 2;
     int64 event_id = 3;
-    int32 quantity = 4;
+    repeated BookingSeat seats = 4;
     int64 total_amount = 5;
-    string status = 6; // PENDING, CONFIRMED, CANCELLED, FAILED
+    string status = 6;
     int64 created_at = 7;
 }
 
 message CreateBookingRequest {
     int64 user_id = 1; 
     int64 event_id = 2;
-    int32 quantity = 3;
+    repeated int64 seat_ids = 3;
 }
 
 message CreateBookingResponse {
     string booking_id = 1;
     string payment_url = 2; 
-    int64 timeout_seconds = 3; // Waktu expired pembayaran
+    int64 timeout_seconds = 3; 
 }
 
 message GetBookingDetailRequest {

@@ -27,11 +27,13 @@ type Event struct {
 	Name           string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Description    string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	Location       string                 `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
-	StartTime      int64                  `protobuf:"varint,5,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"` // Unix timestamp
+	StartTime      int64                  `protobuf:"varint,5,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
 	EndTime        int64                  `protobuf:"varint,6,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 	TotalSeats     int32                  `protobuf:"varint,7,opt,name=total_seats,json=totalSeats,proto3" json:"total_seats,omitempty"`
 	AvailableSeats int32                  `protobuf:"varint,8,opt,name=available_seats,json=availableSeats,proto3" json:"available_seats,omitempty"`
 	Price          int64                  `protobuf:"varint,9,opt,name=price,proto3" json:"price,omitempty"`
+	MinPrice       int64                  `protobuf:"varint,10,opt,name=min_price,json=minPrice,proto3" json:"min_price,omitempty"`
+	MaxPrice       int64                  `protobuf:"varint,11,opt,name=max_price,json=maxPrice,proto3" json:"max_price,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -129,6 +131,604 @@ func (x *Event) GetPrice() int64 {
 	return 0
 }
 
+func (x *Event) GetMinPrice() int64 {
+	if x != nil {
+		return x.MinPrice
+	}
+	return 0
+}
+
+func (x *Event) GetMaxPrice() int64 {
+	if x != nil {
+		return x.MaxPrice
+	}
+	return 0
+}
+
+type SeatCategory struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Price         int64                  `protobuf:"varint,3,opt,name=price,proto3" json:"price,omitempty"`
+	Color         string                 `protobuf:"bytes,4,opt,name=color,proto3" json:"color,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SeatCategory) Reset() {
+	*x = SeatCategory{}
+	mi := &file_proto_event_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SeatCategory) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SeatCategory) ProtoMessage() {}
+
+func (x *SeatCategory) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_event_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SeatCategory.ProtoReflect.Descriptor instead.
+func (*SeatCategory) Descriptor() ([]byte, []int) {
+	return file_proto_event_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *SeatCategory) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *SeatCategory) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *SeatCategory) GetPrice() int64 {
+	if x != nil {
+		return x.Price
+	}
+	return 0
+}
+
+func (x *SeatCategory) GetColor() string {
+	if x != nil {
+		return x.Color
+	}
+	return ""
+}
+
+type Seat struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Label         string                 `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`                              // "A1"
+	RowLabel      string                 `protobuf:"bytes,3,opt,name=row_label,json=rowLabel,proto3" json:"row_label,omitempty"`        // "A"
+	SeatNumber    int32                  `protobuf:"varint,4,opt,name=seat_number,json=seatNumber,proto3" json:"seat_number,omitempty"` // 1
+	CategoryId    int64                  `protobuf:"varint,5,opt,name=category_id,json=categoryId,proto3" json:"category_id,omitempty"`
+	Category      string                 `protobuf:"bytes,6,opt,name=category,proto3" json:"category,omitempty"`
+	Price         int64                  `protobuf:"varint,7,opt,name=price,proto3" json:"price,omitempty"`
+	Status        string                 `protobuf:"bytes,8,opt,name=status,proto3" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Seat) Reset() {
+	*x = Seat{}
+	mi := &file_proto_event_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Seat) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Seat) ProtoMessage() {}
+
+func (x *Seat) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_event_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Seat.ProtoReflect.Descriptor instead.
+func (*Seat) Descriptor() ([]byte, []int) {
+	return file_proto_event_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Seat) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Seat) GetLabel() string {
+	if x != nil {
+		return x.Label
+	}
+	return ""
+}
+
+func (x *Seat) GetRowLabel() string {
+	if x != nil {
+		return x.RowLabel
+	}
+	return ""
+}
+
+func (x *Seat) GetSeatNumber() int32 {
+	if x != nil {
+		return x.SeatNumber
+	}
+	return 0
+}
+
+func (x *Seat) GetCategoryId() int64 {
+	if x != nil {
+		return x.CategoryId
+	}
+	return 0
+}
+
+func (x *Seat) GetCategory() string {
+	if x != nil {
+		return x.Category
+	}
+	return ""
+}
+
+func (x *Seat) GetPrice() int64 {
+	if x != nil {
+		return x.Price
+	}
+	return 0
+}
+
+func (x *Seat) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+type GetSeatMapRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EventId       int64                  `protobuf:"varint,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSeatMapRequest) Reset() {
+	*x = GetSeatMapRequest{}
+	mi := &file_proto_event_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSeatMapRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSeatMapRequest) ProtoMessage() {}
+
+func (x *GetSeatMapRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_event_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSeatMapRequest.ProtoReflect.Descriptor instead.
+func (*GetSeatMapRequest) Descriptor() ([]byte, []int) {
+	return file_proto_event_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetSeatMapRequest) GetEventId() int64 {
+	if x != nil {
+		return x.EventId
+	}
+	return 0
+}
+
+type GetSeatMapResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Categories    []*SeatCategory        `protobuf:"bytes,1,rep,name=categories,proto3" json:"categories,omitempty"`
+	Seats         []*Seat                `protobuf:"bytes,2,rep,name=seats,proto3" json:"seats,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSeatMapResponse) Reset() {
+	*x = GetSeatMapResponse{}
+	mi := &file_proto_event_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSeatMapResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSeatMapResponse) ProtoMessage() {}
+
+func (x *GetSeatMapResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_event_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSeatMapResponse.ProtoReflect.Descriptor instead.
+func (*GetSeatMapResponse) Descriptor() ([]byte, []int) {
+	return file_proto_event_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GetSeatMapResponse) GetCategories() []*SeatCategory {
+	if x != nil {
+		return x.Categories
+	}
+	return nil
+}
+
+func (x *GetSeatMapResponse) GetSeats() []*Seat {
+	if x != nil {
+		return x.Seats
+	}
+	return nil
+}
+
+type ReserveSeatsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EventId       int64                  `protobuf:"varint,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
+	SeatIds       []int64                `protobuf:"varint,2,rep,packed,name=seat_ids,json=seatIds,proto3" json:"seat_ids,omitempty"`
+	BookingId     string                 `protobuf:"bytes,3,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReserveSeatsRequest) Reset() {
+	*x = ReserveSeatsRequest{}
+	mi := &file_proto_event_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReserveSeatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReserveSeatsRequest) ProtoMessage() {}
+
+func (x *ReserveSeatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_event_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReserveSeatsRequest.ProtoReflect.Descriptor instead.
+func (*ReserveSeatsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_event_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ReserveSeatsRequest) GetEventId() int64 {
+	if x != nil {
+		return x.EventId
+	}
+	return 0
+}
+
+func (x *ReserveSeatsRequest) GetSeatIds() []int64 {
+	if x != nil {
+		return x.SeatIds
+	}
+	return nil
+}
+
+func (x *ReserveSeatsRequest) GetBookingId() string {
+	if x != nil {
+		return x.BookingId
+	}
+	return ""
+}
+
+type ReserveSeatsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Reserved      bool                   `protobuf:"varint,1,opt,name=reserved,proto3" json:"reserved,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	TotalAmount   int64                  `protobuf:"varint,3,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
+	ReservedSeats []*Seat                `protobuf:"bytes,4,rep,name=reserved_seats,json=reservedSeats,proto3" json:"reserved_seats,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReserveSeatsResponse) Reset() {
+	*x = ReserveSeatsResponse{}
+	mi := &file_proto_event_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReserveSeatsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReserveSeatsResponse) ProtoMessage() {}
+
+func (x *ReserveSeatsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_event_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReserveSeatsResponse.ProtoReflect.Descriptor instead.
+func (*ReserveSeatsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_event_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ReserveSeatsResponse) GetReserved() bool {
+	if x != nil {
+		return x.Reserved
+	}
+	return false
+}
+
+func (x *ReserveSeatsResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *ReserveSeatsResponse) GetTotalAmount() int64 {
+	if x != nil {
+		return x.TotalAmount
+	}
+	return 0
+}
+
+func (x *ReserveSeatsResponse) GetReservedSeats() []*Seat {
+	if x != nil {
+		return x.ReservedSeats
+	}
+	return nil
+}
+
+type ReleaseSeatsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BookingId     string                 `protobuf:"bytes,1,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReleaseSeatsRequest) Reset() {
+	*x = ReleaseSeatsRequest{}
+	mi := &file_proto_event_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReleaseSeatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReleaseSeatsRequest) ProtoMessage() {}
+
+func (x *ReleaseSeatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_event_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReleaseSeatsRequest.ProtoReflect.Descriptor instead.
+func (*ReleaseSeatsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_event_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ReleaseSeatsRequest) GetBookingId() string {
+	if x != nil {
+		return x.BookingId
+	}
+	return ""
+}
+
+type ReleaseSeatsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Released      bool                   `protobuf:"varint,1,opt,name=released,proto3" json:"released,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReleaseSeatsResponse) Reset() {
+	*x = ReleaseSeatsResponse{}
+	mi := &file_proto_event_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReleaseSeatsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReleaseSeatsResponse) ProtoMessage() {}
+
+func (x *ReleaseSeatsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_event_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReleaseSeatsResponse.ProtoReflect.Descriptor instead.
+func (*ReleaseSeatsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_event_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ReleaseSeatsResponse) GetReleased() bool {
+	if x != nil {
+		return x.Released
+	}
+	return false
+}
+
+func (x *ReleaseSeatsResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type ConfirmSeatsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BookingId     string                 `protobuf:"bytes,1,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ConfirmSeatsRequest) Reset() {
+	*x = ConfirmSeatsRequest{}
+	mi := &file_proto_event_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConfirmSeatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConfirmSeatsRequest) ProtoMessage() {}
+
+func (x *ConfirmSeatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_event_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConfirmSeatsRequest.ProtoReflect.Descriptor instead.
+func (*ConfirmSeatsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_event_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ConfirmSeatsRequest) GetBookingId() string {
+	if x != nil {
+		return x.BookingId
+	}
+	return ""
+}
+
+type ConfirmSeatsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Confirmed     bool                   `protobuf:"varint,1,opt,name=confirmed,proto3" json:"confirmed,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ConfirmSeatsResponse) Reset() {
+	*x = ConfirmSeatsResponse{}
+	mi := &file_proto_event_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConfirmSeatsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConfirmSeatsResponse) ProtoMessage() {}
+
+func (x *ConfirmSeatsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_event_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConfirmSeatsResponse.ProtoReflect.Descriptor instead.
+func (*ConfirmSeatsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_event_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *ConfirmSeatsResponse) GetConfirmed() bool {
+	if x != nil {
+		return x.Confirmed
+	}
+	return false
+}
+
+func (x *ConfirmSeatsResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 type PaginationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Page          int32                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
@@ -139,7 +739,7 @@ type PaginationRequest struct {
 
 func (x *PaginationRequest) Reset() {
 	*x = PaginationRequest{}
-	mi := &file_proto_event_proto_msgTypes[1]
+	mi := &file_proto_event_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -151,7 +751,7 @@ func (x *PaginationRequest) String() string {
 func (*PaginationRequest) ProtoMessage() {}
 
 func (x *PaginationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_event_proto_msgTypes[1]
+	mi := &file_proto_event_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -164,7 +764,7 @@ func (x *PaginationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PaginationRequest.ProtoReflect.Descriptor instead.
 func (*PaginationRequest) Descriptor() ([]byte, []int) {
-	return file_proto_event_proto_rawDescGZIP(), []int{1}
+	return file_proto_event_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *PaginationRequest) GetPage() int32 {
@@ -193,7 +793,7 @@ type PaginationMetadata struct {
 
 func (x *PaginationMetadata) Reset() {
 	*x = PaginationMetadata{}
-	mi := &file_proto_event_proto_msgTypes[2]
+	mi := &file_proto_event_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -205,7 +805,7 @@ func (x *PaginationMetadata) String() string {
 func (*PaginationMetadata) ProtoMessage() {}
 
 func (x *PaginationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_event_proto_msgTypes[2]
+	mi := &file_proto_event_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -218,7 +818,7 @@ func (x *PaginationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PaginationMetadata.ProtoReflect.Descriptor instead.
 func (*PaginationMetadata) Descriptor() ([]byte, []int) {
-	return file_proto_event_proto_rawDescGZIP(), []int{2}
+	return file_proto_event_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *PaginationMetadata) GetCurrentPage() int32 {
@@ -258,7 +858,7 @@ type GetEventsRequest struct {
 
 func (x *GetEventsRequest) Reset() {
 	*x = GetEventsRequest{}
-	mi := &file_proto_event_proto_msgTypes[3]
+	mi := &file_proto_event_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -270,7 +870,7 @@ func (x *GetEventsRequest) String() string {
 func (*GetEventsRequest) ProtoMessage() {}
 
 func (x *GetEventsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_event_proto_msgTypes[3]
+	mi := &file_proto_event_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -283,7 +883,7 @@ func (x *GetEventsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEventsRequest.ProtoReflect.Descriptor instead.
 func (*GetEventsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_event_proto_rawDescGZIP(), []int{3}
+	return file_proto_event_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetEventsRequest) GetPagination() *PaginationRequest {
@@ -303,7 +903,7 @@ type GetEventsResponse struct {
 
 func (x *GetEventsResponse) Reset() {
 	*x = GetEventsResponse{}
-	mi := &file_proto_event_proto_msgTypes[4]
+	mi := &file_proto_event_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -315,7 +915,7 @@ func (x *GetEventsResponse) String() string {
 func (*GetEventsResponse) ProtoMessage() {}
 
 func (x *GetEventsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_event_proto_msgTypes[4]
+	mi := &file_proto_event_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -328,7 +928,7 @@ func (x *GetEventsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEventsResponse.ProtoReflect.Descriptor instead.
 func (*GetEventsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_event_proto_rawDescGZIP(), []int{4}
+	return file_proto_event_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetEventsResponse) GetEvents() []*Event {
@@ -354,7 +954,7 @@ type GetEventDetailRequest struct {
 
 func (x *GetEventDetailRequest) Reset() {
 	*x = GetEventDetailRequest{}
-	mi := &file_proto_event_proto_msgTypes[5]
+	mi := &file_proto_event_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -366,7 +966,7 @@ func (x *GetEventDetailRequest) String() string {
 func (*GetEventDetailRequest) ProtoMessage() {}
 
 func (x *GetEventDetailRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_event_proto_msgTypes[5]
+	mi := &file_proto_event_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -379,7 +979,7 @@ func (x *GetEventDetailRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEventDetailRequest.ProtoReflect.Descriptor instead.
 func (*GetEventDetailRequest) Descriptor() ([]byte, []int) {
-	return file_proto_event_proto_rawDescGZIP(), []int{5}
+	return file_proto_event_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetEventDetailRequest) GetEventId() int64 {
@@ -398,7 +998,7 @@ type GetEventDetailResponse struct {
 
 func (x *GetEventDetailResponse) Reset() {
 	*x = GetEventDetailResponse{}
-	mi := &file_proto_event_proto_msgTypes[6]
+	mi := &file_proto_event_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -410,7 +1010,7 @@ func (x *GetEventDetailResponse) String() string {
 func (*GetEventDetailResponse) ProtoMessage() {}
 
 func (x *GetEventDetailResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_event_proto_msgTypes[6]
+	mi := &file_proto_event_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -423,7 +1023,7 @@ func (x *GetEventDetailResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEventDetailResponse.ProtoReflect.Descriptor instead.
 func (*GetEventDetailResponse) Descriptor() ([]byte, []int) {
-	return file_proto_event_proto_rawDescGZIP(), []int{6}
+	return file_proto_event_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetEventDetailResponse) GetEvent() *Event {
@@ -433,347 +1033,11 @@ func (x *GetEventDetailResponse) GetEvent() *Event {
 	return nil
 }
 
-type CheckAvailabilityRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	EventId       int64                  `protobuf:"varint,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
-	Quantity      int32                  `protobuf:"varint,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CheckAvailabilityRequest) Reset() {
-	*x = CheckAvailabilityRequest{}
-	mi := &file_proto_event_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CheckAvailabilityRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CheckAvailabilityRequest) ProtoMessage() {}
-
-func (x *CheckAvailabilityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_event_proto_msgTypes[7]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CheckAvailabilityRequest.ProtoReflect.Descriptor instead.
-func (*CheckAvailabilityRequest) Descriptor() ([]byte, []int) {
-	return file_proto_event_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *CheckAvailabilityRequest) GetEventId() int64 {
-	if x != nil {
-		return x.EventId
-	}
-	return 0
-}
-
-func (x *CheckAvailabilityRequest) GetQuantity() int32 {
-	if x != nil {
-		return x.Quantity
-	}
-	return 0
-}
-
-type CheckAvailabilityResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	IsAvailable   bool                   `protobuf:"varint,1,opt,name=is_available,json=isAvailable,proto3" json:"is_available,omitempty"`
-	UnitPrice     int64                  `protobuf:"varint,2,opt,name=unit_price,json=unitPrice,proto3" json:"unit_price,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CheckAvailabilityResponse) Reset() {
-	*x = CheckAvailabilityResponse{}
-	mi := &file_proto_event_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CheckAvailabilityResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CheckAvailabilityResponse) ProtoMessage() {}
-
-func (x *CheckAvailabilityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_event_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CheckAvailabilityResponse.ProtoReflect.Descriptor instead.
-func (*CheckAvailabilityResponse) Descriptor() ([]byte, []int) {
-	return file_proto_event_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *CheckAvailabilityResponse) GetIsAvailable() bool {
-	if x != nil {
-		return x.IsAvailable
-	}
-	return false
-}
-
-func (x *CheckAvailabilityResponse) GetUnitPrice() int64 {
-	if x != nil {
-		return x.UnitPrice
-	}
-	return 0
-}
-
-type ReserveSeatRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	EventId       int64                  `protobuf:"varint,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
-	Quantity      int32                  `protobuf:"varint,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	BookingId     string                 `protobuf:"bytes,3,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ReserveSeatRequest) Reset() {
-	*x = ReserveSeatRequest{}
-	mi := &file_proto_event_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ReserveSeatRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ReserveSeatRequest) ProtoMessage() {}
-
-func (x *ReserveSeatRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_event_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ReserveSeatRequest.ProtoReflect.Descriptor instead.
-func (*ReserveSeatRequest) Descriptor() ([]byte, []int) {
-	return file_proto_event_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *ReserveSeatRequest) GetEventId() int64 {
-	if x != nil {
-		return x.EventId
-	}
-	return 0
-}
-
-func (x *ReserveSeatRequest) GetQuantity() int32 {
-	if x != nil {
-		return x.Quantity
-	}
-	return 0
-}
-
-func (x *ReserveSeatRequest) GetBookingId() string {
-	if x != nil {
-		return x.BookingId
-	}
-	return ""
-}
-
-type ReserveSeatResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Reserved      bool                   `protobuf:"varint,1,opt,name=reserved,proto3" json:"reserved,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	UnitPrice     int64                  `protobuf:"varint,3,opt,name=unit_price,json=unitPrice,proto3" json:"unit_price,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ReserveSeatResponse) Reset() {
-	*x = ReserveSeatResponse{}
-	mi := &file_proto_event_proto_msgTypes[10]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ReserveSeatResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ReserveSeatResponse) ProtoMessage() {}
-
-func (x *ReserveSeatResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_event_proto_msgTypes[10]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ReserveSeatResponse.ProtoReflect.Descriptor instead.
-func (*ReserveSeatResponse) Descriptor() ([]byte, []int) {
-	return file_proto_event_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *ReserveSeatResponse) GetReserved() bool {
-	if x != nil {
-		return x.Reserved
-	}
-	return false
-}
-
-func (x *ReserveSeatResponse) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
-func (x *ReserveSeatResponse) GetUnitPrice() int64 {
-	if x != nil {
-		return x.UnitPrice
-	}
-	return 0
-}
-
-type ReleaseSeatRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	EventId       int64                  `protobuf:"varint,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
-	Quantity      int32                  `protobuf:"varint,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	BookingId     string                 `protobuf:"bytes,3,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ReleaseSeatRequest) Reset() {
-	*x = ReleaseSeatRequest{}
-	mi := &file_proto_event_proto_msgTypes[11]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ReleaseSeatRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ReleaseSeatRequest) ProtoMessage() {}
-
-func (x *ReleaseSeatRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_event_proto_msgTypes[11]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ReleaseSeatRequest.ProtoReflect.Descriptor instead.
-func (*ReleaseSeatRequest) Descriptor() ([]byte, []int) {
-	return file_proto_event_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *ReleaseSeatRequest) GetEventId() int64 {
-	if x != nil {
-		return x.EventId
-	}
-	return 0
-}
-
-func (x *ReleaseSeatRequest) GetQuantity() int32 {
-	if x != nil {
-		return x.Quantity
-	}
-	return 0
-}
-
-func (x *ReleaseSeatRequest) GetBookingId() string {
-	if x != nil {
-		return x.BookingId
-	}
-	return ""
-}
-
-type ReleaseSeatResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Released      bool                   `protobuf:"varint,1,opt,name=released,proto3" json:"released,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ReleaseSeatResponse) Reset() {
-	*x = ReleaseSeatResponse{}
-	mi := &file_proto_event_proto_msgTypes[12]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ReleaseSeatResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ReleaseSeatResponse) ProtoMessage() {}
-
-func (x *ReleaseSeatResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_event_proto_msgTypes[12]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ReleaseSeatResponse.ProtoReflect.Descriptor instead.
-func (*ReleaseSeatResponse) Descriptor() ([]byte, []int) {
-	return file_proto_event_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *ReleaseSeatResponse) GetReleased() bool {
-	if x != nil {
-		return x.Released
-	}
-	return false
-}
-
-func (x *ReleaseSeatResponse) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 var File_proto_event_proto protoreflect.FileDescriptor
 
 const file_proto_event_proto_rawDesc = "" +
 	"\n" +
-	"\x11proto/event.proto\x12\x05event\"\x83\x02\n" +
+	"\x11proto/event.proto\x12\x05event\"\xbd\x02\n" +
 	"\x05Event\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
@@ -785,7 +1049,55 @@ const file_proto_event_proto_rawDesc = "" +
 	"\vtotal_seats\x18\a \x01(\x05R\n" +
 	"totalSeats\x12'\n" +
 	"\x0favailable_seats\x18\b \x01(\x05R\x0eavailableSeats\x12\x14\n" +
-	"\x05price\x18\t \x01(\x03R\x05price\"=\n" +
+	"\x05price\x18\t \x01(\x03R\x05price\x12\x1b\n" +
+	"\tmin_price\x18\n" +
+	" \x01(\x03R\bminPrice\x12\x1b\n" +
+	"\tmax_price\x18\v \x01(\x03R\bmaxPrice\"^\n" +
+	"\fSeatCategory\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05price\x18\x03 \x01(\x03R\x05price\x12\x14\n" +
+	"\x05color\x18\x04 \x01(\tR\x05color\"\xd5\x01\n" +
+	"\x04Seat\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x14\n" +
+	"\x05label\x18\x02 \x01(\tR\x05label\x12\x1b\n" +
+	"\trow_label\x18\x03 \x01(\tR\browLabel\x12\x1f\n" +
+	"\vseat_number\x18\x04 \x01(\x05R\n" +
+	"seatNumber\x12\x1f\n" +
+	"\vcategory_id\x18\x05 \x01(\x03R\n" +
+	"categoryId\x12\x1a\n" +
+	"\bcategory\x18\x06 \x01(\tR\bcategory\x12\x14\n" +
+	"\x05price\x18\a \x01(\x03R\x05price\x12\x16\n" +
+	"\x06status\x18\b \x01(\tR\x06status\".\n" +
+	"\x11GetSeatMapRequest\x12\x19\n" +
+	"\bevent_id\x18\x01 \x01(\x03R\aeventId\"l\n" +
+	"\x12GetSeatMapResponse\x123\n" +
+	"\n" +
+	"categories\x18\x01 \x03(\v2\x13.event.SeatCategoryR\n" +
+	"categories\x12!\n" +
+	"\x05seats\x18\x02 \x03(\v2\v.event.SeatR\x05seats\"j\n" +
+	"\x13ReserveSeatsRequest\x12\x19\n" +
+	"\bevent_id\x18\x01 \x01(\x03R\aeventId\x12\x19\n" +
+	"\bseat_ids\x18\x02 \x03(\x03R\aseatIds\x12\x1d\n" +
+	"\n" +
+	"booking_id\x18\x03 \x01(\tR\tbookingId\"\xa3\x01\n" +
+	"\x14ReserveSeatsResponse\x12\x1a\n" +
+	"\breserved\x18\x01 \x01(\bR\breserved\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12!\n" +
+	"\ftotal_amount\x18\x03 \x01(\x03R\vtotalAmount\x122\n" +
+	"\x0ereserved_seats\x18\x04 \x03(\v2\v.event.SeatR\rreservedSeats\"4\n" +
+	"\x13ReleaseSeatsRequest\x12\x1d\n" +
+	"\n" +
+	"booking_id\x18\x01 \x01(\tR\tbookingId\"L\n" +
+	"\x14ReleaseSeatsResponse\x12\x1a\n" +
+	"\breleased\x18\x01 \x01(\bR\breleased\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"4\n" +
+	"\x13ConfirmSeatsRequest\x12\x1d\n" +
+	"\n" +
+	"booking_id\x18\x01 \x01(\tR\tbookingId\"N\n" +
+	"\x14ConfirmSeatsResponse\x12\x1c\n" +
+	"\tconfirmed\x18\x01 \x01(\bR\tconfirmed\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"=\n" +
 	"\x11PaginationRequest\x12\x12\n" +
 	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\"\x98\x01\n" +
@@ -807,38 +1119,15 @@ const file_proto_event_proto_rawDesc = "" +
 	"\x15GetEventDetailRequest\x12\x19\n" +
 	"\bevent_id\x18\x01 \x01(\x03R\aeventId\"<\n" +
 	"\x16GetEventDetailResponse\x12\"\n" +
-	"\x05event\x18\x01 \x01(\v2\f.event.EventR\x05event\"Q\n" +
-	"\x18CheckAvailabilityRequest\x12\x19\n" +
-	"\bevent_id\x18\x01 \x01(\x03R\aeventId\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x05R\bquantity\"]\n" +
-	"\x19CheckAvailabilityResponse\x12!\n" +
-	"\fis_available\x18\x01 \x01(\bR\visAvailable\x12\x1d\n" +
-	"\n" +
-	"unit_price\x18\x02 \x01(\x03R\tunitPrice\"j\n" +
-	"\x12ReserveSeatRequest\x12\x19\n" +
-	"\bevent_id\x18\x01 \x01(\x03R\aeventId\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x05R\bquantity\x12\x1d\n" +
-	"\n" +
-	"booking_id\x18\x03 \x01(\tR\tbookingId\"j\n" +
-	"\x13ReserveSeatResponse\x12\x1a\n" +
-	"\breserved\x18\x01 \x01(\bR\breserved\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1d\n" +
-	"\n" +
-	"unit_price\x18\x03 \x01(\x03R\tunitPrice\"j\n" +
-	"\x12ReleaseSeatRequest\x12\x19\n" +
-	"\bevent_id\x18\x01 \x01(\x03R\aeventId\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x05R\bquantity\x12\x1d\n" +
-	"\n" +
-	"booking_id\x18\x03 \x01(\tR\tbookingId\"K\n" +
-	"\x13ReleaseSeatResponse\x12\x1a\n" +
-	"\breleased\x18\x01 \x01(\bR\breleased\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\x81\x03\n" +
+	"\x05event\x18\x01 \x01(\v2\f.event.EventR\x05event2\xb9\x03\n" +
 	"\fEventService\x12>\n" +
 	"\tGetEvents\x12\x17.event.GetEventsRequest\x1a\x18.event.GetEventsResponse\x12M\n" +
-	"\x0eGetEventDetail\x12\x1c.event.GetEventDetailRequest\x1a\x1d.event.GetEventDetailResponse\x12V\n" +
-	"\x11CheckAvailability\x12\x1f.event.CheckAvailabilityRequest\x1a .event.CheckAvailabilityResponse\x12D\n" +
-	"\vReserveSeat\x12\x19.event.ReserveSeatRequest\x1a\x1a.event.ReserveSeatResponse\x12D\n" +
-	"\vReleaseSeat\x12\x19.event.ReleaseSeatRequest\x1a\x1a.event.ReleaseSeatResponseB\x14Z\x12shared/proto/eventb\x06proto3"
+	"\x0eGetEventDetail\x12\x1c.event.GetEventDetailRequest\x1a\x1d.event.GetEventDetailResponse\x12A\n" +
+	"\n" +
+	"GetSeatMap\x12\x18.event.GetSeatMapRequest\x1a\x19.event.GetSeatMapResponse\x12F\n" +
+	"\vReserveSeat\x12\x1a.event.ReserveSeatsRequest\x1a\x1b.event.ReserveSeatsResponse\x12F\n" +
+	"\vReleaseSeat\x12\x1a.event.ReleaseSeatsRequest\x1a\x1b.event.ReleaseSeatsResponse\x12G\n" +
+	"\fConfirmSeats\x12\x1a.event.ConfirmSeatsRequest\x1a\x1b.event.ConfirmSeatsResponseB\x14Z\x12shared/proto/eventb\x06proto3"
 
 var (
 	file_proto_event_proto_rawDescOnce sync.Once
@@ -852,42 +1141,51 @@ func file_proto_event_proto_rawDescGZIP() []byte {
 	return file_proto_event_proto_rawDescData
 }
 
-var file_proto_event_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_proto_event_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_proto_event_proto_goTypes = []any{
-	(*Event)(nil),                     // 0: event.Event
-	(*PaginationRequest)(nil),         // 1: event.PaginationRequest
-	(*PaginationMetadata)(nil),        // 2: event.PaginationMetadata
-	(*GetEventsRequest)(nil),          // 3: event.GetEventsRequest
-	(*GetEventsResponse)(nil),         // 4: event.GetEventsResponse
-	(*GetEventDetailRequest)(nil),     // 5: event.GetEventDetailRequest
-	(*GetEventDetailResponse)(nil),    // 6: event.GetEventDetailResponse
-	(*CheckAvailabilityRequest)(nil),  // 7: event.CheckAvailabilityRequest
-	(*CheckAvailabilityResponse)(nil), // 8: event.CheckAvailabilityResponse
-	(*ReserveSeatRequest)(nil),        // 9: event.ReserveSeatRequest
-	(*ReserveSeatResponse)(nil),       // 10: event.ReserveSeatResponse
-	(*ReleaseSeatRequest)(nil),        // 11: event.ReleaseSeatRequest
-	(*ReleaseSeatResponse)(nil),       // 12: event.ReleaseSeatResponse
+	(*Event)(nil),                  // 0: event.Event
+	(*SeatCategory)(nil),           // 1: event.SeatCategory
+	(*Seat)(nil),                   // 2: event.Seat
+	(*GetSeatMapRequest)(nil),      // 3: event.GetSeatMapRequest
+	(*GetSeatMapResponse)(nil),     // 4: event.GetSeatMapResponse
+	(*ReserveSeatsRequest)(nil),    // 5: event.ReserveSeatsRequest
+	(*ReserveSeatsResponse)(nil),   // 6: event.ReserveSeatsResponse
+	(*ReleaseSeatsRequest)(nil),    // 7: event.ReleaseSeatsRequest
+	(*ReleaseSeatsResponse)(nil),   // 8: event.ReleaseSeatsResponse
+	(*ConfirmSeatsRequest)(nil),    // 9: event.ConfirmSeatsRequest
+	(*ConfirmSeatsResponse)(nil),   // 10: event.ConfirmSeatsResponse
+	(*PaginationRequest)(nil),      // 11: event.PaginationRequest
+	(*PaginationMetadata)(nil),     // 12: event.PaginationMetadata
+	(*GetEventsRequest)(nil),       // 13: event.GetEventsRequest
+	(*GetEventsResponse)(nil),      // 14: event.GetEventsResponse
+	(*GetEventDetailRequest)(nil),  // 15: event.GetEventDetailRequest
+	(*GetEventDetailResponse)(nil), // 16: event.GetEventDetailResponse
 }
 var file_proto_event_proto_depIdxs = []int32{
-	1,  // 0: event.GetEventsRequest.pagination:type_name -> event.PaginationRequest
-	0,  // 1: event.GetEventsResponse.events:type_name -> event.Event
-	2,  // 2: event.GetEventsResponse.meta:type_name -> event.PaginationMetadata
-	0,  // 3: event.GetEventDetailResponse.event:type_name -> event.Event
-	3,  // 4: event.EventService.GetEvents:input_type -> event.GetEventsRequest
-	5,  // 5: event.EventService.GetEventDetail:input_type -> event.GetEventDetailRequest
-	7,  // 6: event.EventService.CheckAvailability:input_type -> event.CheckAvailabilityRequest
-	9,  // 7: event.EventService.ReserveSeat:input_type -> event.ReserveSeatRequest
-	11, // 8: event.EventService.ReleaseSeat:input_type -> event.ReleaseSeatRequest
-	4,  // 9: event.EventService.GetEvents:output_type -> event.GetEventsResponse
-	6,  // 10: event.EventService.GetEventDetail:output_type -> event.GetEventDetailResponse
-	8,  // 11: event.EventService.CheckAvailability:output_type -> event.CheckAvailabilityResponse
-	10, // 12: event.EventService.ReserveSeat:output_type -> event.ReserveSeatResponse
-	12, // 13: event.EventService.ReleaseSeat:output_type -> event.ReleaseSeatResponse
-	9,  // [9:14] is the sub-list for method output_type
-	4,  // [4:9] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	1,  // 0: event.GetSeatMapResponse.categories:type_name -> event.SeatCategory
+	2,  // 1: event.GetSeatMapResponse.seats:type_name -> event.Seat
+	2,  // 2: event.ReserveSeatsResponse.reserved_seats:type_name -> event.Seat
+	11, // 3: event.GetEventsRequest.pagination:type_name -> event.PaginationRequest
+	0,  // 4: event.GetEventsResponse.events:type_name -> event.Event
+	12, // 5: event.GetEventsResponse.meta:type_name -> event.PaginationMetadata
+	0,  // 6: event.GetEventDetailResponse.event:type_name -> event.Event
+	13, // 7: event.EventService.GetEvents:input_type -> event.GetEventsRequest
+	15, // 8: event.EventService.GetEventDetail:input_type -> event.GetEventDetailRequest
+	3,  // 9: event.EventService.GetSeatMap:input_type -> event.GetSeatMapRequest
+	5,  // 10: event.EventService.ReserveSeat:input_type -> event.ReserveSeatsRequest
+	7,  // 11: event.EventService.ReleaseSeat:input_type -> event.ReleaseSeatsRequest
+	9,  // 12: event.EventService.ConfirmSeats:input_type -> event.ConfirmSeatsRequest
+	14, // 13: event.EventService.GetEvents:output_type -> event.GetEventsResponse
+	16, // 14: event.EventService.GetEventDetail:output_type -> event.GetEventDetailResponse
+	4,  // 15: event.EventService.GetSeatMap:output_type -> event.GetSeatMapResponse
+	6,  // 16: event.EventService.ReserveSeat:output_type -> event.ReserveSeatsResponse
+	8,  // 17: event.EventService.ReleaseSeat:output_type -> event.ReleaseSeatsResponse
+	10, // 18: event.EventService.ConfirmSeats:output_type -> event.ConfirmSeatsResponse
+	13, // [13:19] is the sub-list for method output_type
+	7,  // [7:13] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_proto_event_proto_init() }
@@ -901,7 +1199,7 @@ func file_proto_event_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_event_proto_rawDesc), len(file_proto_event_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
